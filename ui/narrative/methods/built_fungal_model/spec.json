@@ -141,6 +141,14 @@
             ],
             "output_mapping": [
                 {
+                  "constant_value": "KBaseFBA.FBAModel",
+                  "target_property": "type"
+                },
+                {
+                  "input_parameter": "output_model",
+                  "target_property": "obj"
+                },
+                {
                     "service_method_output_path": [0,"report_name"],
                     "target_property": "report_name"
                 },
