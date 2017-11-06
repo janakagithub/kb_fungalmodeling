@@ -159,23 +159,25 @@ sub build_fungal_model
     #my $ws_name = "secalhoun:narrative_1506371194238";
     #my $ws_name = "janakakbase:narrative_1509376805185";
     my $ws_name = $params->{workspace};
-    my $protCompId = 'Neurospora_crassa_'.$params->{genome_ref};
+    my $protCompId = 'Neurospora_crassa_OR74A_'.$params->{genome_ref};
+
+
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $ws_name,
         genome1id => $params->{genome_ref},
         genome2ws => $ws_name,
-        genome2id => 'Neurospora_crassa',
+        genome2id => 'Neurospora_crassa_OR74A',
         output_ws =>  $ws_name,
         output_id =>  $protCompId
     });
 
 
 
-    my $model_name = "Neuropora_crassa_Model";
+    my $model_name = "iJDZ836";
 
     my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
         fbamodel_id => $model_name,
-        fbamodel_workspace => $ws_name,
+        fbamodel_workspace => ' janakakbase:narrative_1498154949048', #$ws_name,
         proteincomparison_id => $protCompId,
         proteincomparison_workspace =>  $ws_name,
         fbamodel_output_id =>  $params->{output_model},
