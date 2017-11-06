@@ -20,6 +20,7 @@ This sample module contains one small method - filter_contigs.
 
 #BEGIN_HEADER
 use Bio::KBase::AuthToken;
+use Workspace::WorkspaceClient;
 use AssemblyUtil::AssemblyUtilClient;
 use KBaseReport::KBaseReportClient;
 use GenomeProteomeComparison::GenomeProteomeComparisonClient;
