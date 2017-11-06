@@ -1,0 +1,159 @@
+{
+    "ver": "0.0.1",
+    "authors": [
+        "janakakbase"
+    ],
+    "contact": "https://kbase.us/contact-us/",
+    "categories": ["active"],
+    "widgets": {
+        "input": null,
+        "output": "no-display"
+    },
+    "parameters": [
+        {
+            "id": "genome_ref",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": [ "KBaseGenomes.Genome" ]
+            }
+        },
+        {
+            "id": "template_model",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "Neurospora crassa iJDZ836" ],
+            "field_type": "dropdown",
+            "dropdown_options": {
+                "options": [
+                    {
+                      "value": "iJL1454",
+                      "display": "Aspergillus terreus iJL1454",
+                      "id": "iJL1454",
+                      "ui_name": "Aspergillus terreus iJL1454"
+                    },
+                    {
+                      "value": "iNX804",
+                      "display": "Candida glabrata iNX804",
+                      "id": "iNX804",
+                      "ui_name": "Candida glabrata iNX804"
+                    },
+                    {
+                      "value": "iCT646",
+                      "display": "Candida tropicalis iCT646",
+                      "id": "iCT646",
+                      "ui_name": "Candida tropicalis iCT646"
+                    },
+                    {
+                      "value": "iOD907",
+                      "display": "Kluyveromyces lactis iOD907",
+                      "id": "iOD907",
+                      "ui_name": "Kluyveromyces lactis iOD907"
+                    },
+                    {
+                      "value": "iJDZ836",
+                      "display": "Neurospora crassa iJDZ836",
+                      "id": "iJDZ836",
+                      "ui_name": "Neurospora crassa iJDZ836"
+                    },
+                    {
+                      "value": "yeast7.6",
+                      "display": "Saccharomyces cerevisiae yeast7.6",
+                      "id": "yeast7.6",
+                      "ui_name": "Saccharomyces cerevisiae yeast7.6"
+                    }
+
+                ]
+
+            }
+        },
+        {
+            "id" : "output_model",
+            "optional" : false,
+            "advanced" : false,
+            "allow_multiple" : false,
+            "default_values" : [ "" ],
+            "field_type" : "text",
+            "text_options" : {
+            "valid_ws_types" : [ "KBaseFBA.FBAModel" ],
+            "is_output_name":true
+            }
+        },
+        {
+            "id": "translation_policy",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "Translate only" ],
+            "field_type": "dropdown",
+            "dropdown_options": {
+                "options": [
+                    {
+                      "value": "translate_only",
+                      "display": "Translate only",
+                      "id": "translate_only",
+                      "ui_name": "Translate only"
+                    },
+                    {
+                      "value": "add_ugr",
+                      "display": "Add unique gene reactions",
+                      "id": "add_ugr",
+                      "ui_name": "Add unique gene reactions"
+                    }
+
+                ]
+
+            }
+        }
+
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name":"kb_fungalmodeling",
+            "method": "build_fungal_model",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspace"
+                },
+                {
+                    "input_parameter": "genome_ref",
+                    "target_property": "genome_ref",
+                    "target_type_transform": "resolved-ref"
+                },
+                {
+                    "input_parameter": "translation_policy",
+                    "target_property": "translation_policy"
+                },
+                {
+                    "input_parameter": "template_model",
+                    "target_property": "template_model"
+                },
+                {
+                    "input_parameter": "output_model",
+                    "target_property": "output_model"
+                }
+            ],
+            "output_mapping": [
+                {
+                    "service_method_output_path": [0,"report_name"],
+                    "target_property": "report_name"
+                },
+                {
+                    "service_method_output_path": [0,"report_ref"],
+                    "target_property": "report_ref"
+                },
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "ws"
+                }
+            ]
+        }
+    },
+    "job_id_output_field": "docker"
+}

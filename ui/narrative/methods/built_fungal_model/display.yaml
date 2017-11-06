@@ -1,0 +1,52 @@
+#
+# define display information
+#
+name: Build Fungal Model
+tooltip: |
+    Build Fungal Model
+screenshots: []
+
+icon: null
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            [annotate_contigset]
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    genome_ref :
+        ui-name : |
+            Genome Name
+        short-hint : |
+            Genome Name
+    template_model :
+        ui-name : |
+            Template type
+        short-hint : |
+            Template type
+    translation_policy :
+        ui-name : |
+            Translation policy
+        short-hint : |
+            Translation_policy
+    output_model :
+        ui-name : |
+            Output model
+        short-hint : |
+            Output model
+
+description : |
+    <p>Construct a fungal model through model propagation.</p>
