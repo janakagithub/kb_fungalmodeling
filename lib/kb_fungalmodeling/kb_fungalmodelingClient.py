@@ -37,13 +37,29 @@ class kb_fungalmodeling(object):
         """
         :param params: instance of type "fungalmodelbuiltInput" -> structure:
            parameter "workspace" of String, parameter "genome_ref" of String,
-           parameter "template_model" of String, parameter
-           "translation_policy" of String, parameter "output_model" of String
+           parameter "template_model" of String, parameter "gapfill_model" of
+           Long, parameter "translation_policy" of String, parameter
+           "output_model" of String
         :returns: instance of type "fungalmodelbuiltOutput" -> structure:
            parameter "report_name" of String, parameter "report_ref" of String
         """
         return self._client.call_method(
             'kb_fungalmodeling.build_fungal_model',
+            [params], self._service_ver, context)
+
+    def build_fungal_template(self, params, context=None):
+        """
+        :param params: instance of type "fungalReferenceModelBuildInput" ->
+           structure: parameter "workspace" of String, parameter
+           "reference_genome" of String, parameter "reference_model" of
+           String, parameter "genome_ws" of String, parameter "model_ws" of
+           String
+        :returns: instance of type "fungalReferenceModelBuildOutput" ->
+           structure: parameter "master_template_model_ref" of String,
+           parameter "master_template_genome_ref" of String
+        """
+        return self._client.call_method(
+            'kb_fungalmodeling.build_fungal_template',
             [params], self._service_ver, context)
 
     def status(self, context=None):

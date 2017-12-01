@@ -202,7 +202,6 @@ sub build_fungal_model
 
     }
 
-=head
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $params->{workspace},
         genome1id => $params->{genome_ref},
@@ -212,7 +211,7 @@ sub build_fungal_model
         output_id => $protCompId
     });
 
-=cut
+
     my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
         fbamodel_id => $tmpModel,
         fbamodel_workspace => $params->{workspace}, # ' janakakbase:narrative_1498154949048', #$ws_name,

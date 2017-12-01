@@ -17,7 +17,7 @@ import us.kbase.common.service.UnauthorizedException;
  * <p>Original spec-file module name: kb_fungalmodeling</p>
  * <pre>
  * A KBase module: kb_fungalmodeling
- * This sample module contains one small method - filter_contigs.
+ * This module  build fungal models based on fungal genomes.
  * </pre>
  */
 public class KbFungalmodelingClient {
@@ -177,6 +177,23 @@ public class KbFungalmodelingClient {
         args.add(params);
         TypeReference<List<FungalmodelbuiltOutput>> retType = new TypeReference<List<FungalmodelbuiltOutput>>() {};
         List<FungalmodelbuiltOutput> res = caller.jsonrpcCall("kb_fungalmodeling.build_fungal_model", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: build_fungal_template</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.kbfungalmodeling.FungalReferenceModelBuildInput FungalReferenceModelBuildInput} (original type "fungalReferenceModelBuildInput")
+     * @return   parameter "output" of type {@link us.kbase.kbfungalmodeling.FungalReferenceModelBuildOutput FungalReferenceModelBuildOutput} (original type "fungalReferenceModelBuildOutput")
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public FungalReferenceModelBuildOutput buildFungalTemplate(FungalReferenceModelBuildInput params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<FungalReferenceModelBuildOutput>> retType = new TypeReference<List<FungalReferenceModelBuildOutput>>() {};
+        List<FungalReferenceModelBuildOutput> res = caller.jsonrpcCall("kb_fungalmodeling.build_fungal_template", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
