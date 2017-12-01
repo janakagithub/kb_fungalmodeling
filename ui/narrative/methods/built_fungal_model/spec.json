@@ -26,7 +26,7 @@
             "optional": true,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "Neurospora crassa iJDZ836" ],
+            "default_values": [ "Default template" ],
             "field_type": "dropdown",
             "dropdown_options": {
                 "options": [
@@ -41,6 +41,12 @@
                       "display": "Candida glabrata iNX804",
                       "id": "iNX804",
                       "ui_name": "Candida glabrata iNX804"
+                    },
+                    {
+                      "value": "default_temp",
+                      "display": "Default template",
+                      "id": "iNX804",
+                      "ui_name": "Default template"
                     },
                     {
                       "value": "iCT646",
@@ -61,15 +67,32 @@
                       "ui_name": "Neurospora crassa iJDZ836"
                     },
                     {
-                      "value": "yeast7.6",
+                      "value": "yeast",
                       "display": "Saccharomyces cerevisiae yeast7.6",
-                      "id": "yeast7.6",
+                      "id": "yeast",
                       "ui_name": "Saccharomyces cerevisiae yeast7.6"
                     }
 
                 ]
 
             }
+        },
+        {
+             "field_type" : "checkbox",
+             "allow_multiple" : false,
+             "optional" : false,
+             "id" : "gapfill_model",
+             "advanced" : false,
+             "default_values" : [
+                "0"
+             ],
+             "checkbox_options" : {
+                "unchecked_value" : 0,
+                "checked_value" : 1
+             },
+             "text_options" : {
+                "valid_ws_types" : []
+             }
         },
         {
             "id" : "output_model",

@@ -21,7 +21,7 @@ my $auth_token = Bio::KBase::AuthToken->new(token => $token, ignore_authrc => 1,
 my $ctx = LocalCallContext->new($token, $auth_token->user_id);
 $kb_fungalmodeling::kb_fungalmodelingServer::CallContext = $ctx;
 my $impl = new kb_fungalmodeling::kb_fungalmodelingImpl();
-
+=head
 sub get_ws_name {
     if (!defined($ws_name)) {
         my $suffix = int(time * 1000);
@@ -30,19 +30,34 @@ sub get_ws_name {
     }
     return $ws_name;
 }
+=cut
 
-my $ws_name = "janakakbase:narrative_1509376805185";
+#my $ws = "janakakbase:narrative_1509376805185";
+#my $ws = "janakakbase:narrative_1498154949048";
+my $ws = 'janakakbase:narrative_1509987427391';
+my $input_genome = 'Aspergillus_terreus';
 my $protInput = {
-        workspace => $ws_name,
-        genome_ref => 'Neurospora_crassa',
-        template_model =>  'Neuropora_crassa_Model',
+        workspace => $ws,
+        genome_ref => $input_genome,
+        template_model =>  'default_temp',
         translation_policy =>  'translate_only',
-        output_model =>  'prpogated_model_out'
+        gapfill_model => 0,
+        output_model =>  'prpogated_model_out_'.$input_genome
+};
+
+my $template_ws= 'janakakbase:narrative_1509987427391';
+
+my $templateBuild = {
+        workspace => $template_ws,
+        reference_genome => 'Neurospora_crassa',
+        reference_model =>  'Neuropora_crassa_Model',
+        output_model =>  'FungalTemplateModel'
 };
 
 eval {
- my $ret =$impl->build_fungal_model($protInput);
- print &Dumper ($ret);
+    my $ret =$impl->build_fungal_model($protInput);
+    #my $ret =$impl->build_fungal_template($templateBuild);
+    print &Dumper ($ret);
 };
 
 

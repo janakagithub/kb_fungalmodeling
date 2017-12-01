@@ -37,6 +37,11 @@ parameters :
             Template type
         short-hint : |
             Template type
+    gapfill_model :
+        ui-name : |
+            Gapfill the model
+        short-hint : |
+            Gapfill the model in complete media
     translation_policy :
         ui-name : |
             Translation policy
