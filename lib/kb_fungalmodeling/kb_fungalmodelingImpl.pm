@@ -162,8 +162,9 @@ sub build_fungal_model
 
     #my $ws_name = "secalhoun:narrative_1506371194238";
     #my $ws_name = "janakakbase:narrative_1509376805185";
-    my $template_genome_ref = 'CM_Neuro_Cglaba_Ctropi_Aterreus.genome';
-    my $template_model_ref = 'CM_Neuro_Cglaba_Ctropi_Aterreus';
+    my $template_ws = 'janakakbase:narrative_1513399583946'; # workspace for mastermode and genome
+    my $template_genome_ref = 'fungal_template.genome'; #'CM_Neuro_Cglaba_Ctropi_Aterreus.genome';
+    my $template_model_ref = 'master_fungal_template'; #'CM_Neuro_Cglaba_Ctropi_Aterreus';
     my $ws_name = $params->{workspace};
     my $protCompId = 'proteinComp'.$params->{genome_ref};
     my $tmpGenome;
@@ -176,10 +177,9 @@ sub build_fungal_model
       iCT646 => ['iCT646','Candida_tropicali_MYA-3404'],
       iOD907 => ['iOD907','GCF_000002515.2'],
       iJDZ836 => ['iJDZ836','Neurospora_crassa_OR74A'],
+      Yeast => ['yeast_7.6_KBase','GCF_000146045.2']
 
     };
-
-
 
 
 
@@ -191,9 +191,9 @@ sub build_fungal_model
       $tmpGenome = $templateId->{$params->{template_model}}->[1];
 
       print &Dumper ($templateId);
-      print "for the moment setting template to master\n";
-      $tmpGenome = $template_genome_ref;
-      $tmpModel = $template_model_ref;
+      #print "for the moment setting template to master\n";
+      #$tmpGenome = $template_genome_ref;
+      #$tmpModel = $template_model_ref;
 
     }
     my $tran_policy;
@@ -205,16 +205,16 @@ sub build_fungal_model
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $params->{workspace},
         genome1id => $params->{genome_ref},
-        genome2ws => $params->{workspace},
+        genome2ws => $template_ws,
         genome2id => $tmpGenome,
-        output_ws => $ws_name,
+        output_ws => $params->{workspace},
         output_id => $protCompId
     });
 
 
     my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
         fbamodel_id => $tmpModel,
-        fbamodel_workspace => $params->{workspace}, # ' janakakbase:narrative_1498154949048', #$ws_name,
+        fbamodel_workspace => $template_ws, #$params->{workspace}, # ' janakakbase:narrative_1498154949048', #$ws_name,
         proteincomparison_id => $protCompId,
         proteincomparison_workspace => $params->{workspace},
         fbamodel_output_id =>  $params->{output_model},
@@ -254,6 +254,7 @@ sub build_fungal_model
 
     my $reporter_string = "Fungal model was built based upon proteome comparison $protCompId and produced the model $params->{output_model}\n";
 
+
     #die;
 
 
@@ -289,7 +290,7 @@ sub build_fungal_model
 
     print "Report is generated: name and the ref as follows\n";
     print &Dumper ($report_response);
-     my $report_out = {
+    my $report_out = {
       report_name => $report_response->{name},
       report_ref => $report_response->{ref}
     };
@@ -301,9 +302,9 @@ sub build_fungal_model
     my @_bad_returns;
     (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
     if (@_bad_returns) {
-	my $msg = "Invalid returns passed to build_fungal_model:\n" . join("", map { "\t$_\n" } @_bad_returns);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'build_fungal_model');
+    	my $msg = "Invalid returns passed to build_fungal_model:\n" . join("", map { "\t$_\n" } @_bad_returns);
+    	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+    							       method_name => 'build_fungal_model');
     }
     return($output);
 }
@@ -384,6 +385,7 @@ sub build_fungal_template
 
     print &Dumper ($params);
     my $token=$ctx->token;
+    my $provenance=$ctx->provenance;
     my $wshandle = Workspace::WorkspaceClient->new($self->{'workspace-url'},token=>$token);
 
     my $fbaO = new fba_tools::fba_toolsClient( $self->{'callbackURL'},
@@ -391,29 +393,133 @@ sub build_fungal_template
                                                               'async_version' => 'release',
                                                             )
                                                            );
-    print &Dumper ($wshandle);
 
+    print &Dumper ($wshandle);
     my $ws = $params->{workspace};
 
+=head
+#published models considered for the template
+
+      iJL1454 => ['iJL1454', 'Aspergillus terreus iJL1454'],
+      iNX804  => ['iNX804','Candida_glabrata_ASM254'],
+      iCT646 => ['iCT646','Candida_tropicali_MYA-3404'],
+      iOD907 => ['iOD907','GCF_000002515.2'],
+      iJDZ836 => ['iJDZ836','Neurospora_crassa_OR74A'],
+
+
+
+    my $fungal_temp_community_model = $fbaO->merge_metabolic_models_into_community_model({
+       fbamodel_id_list => ["25857/11/2", "25857/12/1"],
+       fbamodel_output_id => "FungalModelTemplate",
+       workspace => $params->{workspace},
+       mixed_bag_model => 1
+
+    });
+=cut
+
+    my $crassaModel =  '25857/11/2';
     my $start_genome_id  = '25857/2/3'; # 'Neurospora_crassa_OR74A',
     my $start_model_name = '25857/11/2'; # iJDZ836";
-
+    my $master_temp = '26394/2/1';#25857/25/1';
     my $first_model;
 
+
+    my $masterBio;
     eval {
-       $first_model = $wshandle->get_objects([{ref=>'25857/4/2'}])->[0];
+       $masterBio = $wshandle->get_objects([{ref=>'26708/12/1'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
+       #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
     };
     if ($@) {
        die "Error loading object from the workspace:\n".$@;
     }
 
+   my $biomass_cpd_remove = {
+       biomass_id => 'bio1',
+       biomass_compound_id => '',
+       biomass_coefficient => 0
+    };
 
-    my $community_model = $fbaO->Omerge_metabolic_models_into_community_model({
-       fbamodel_id_list => ["25857/11/2", "25857/12/1"],
-       fbamodel_output_id => "community_model_NeurosAndCandida",
-       mixed_bag_model => 1
+    my $tempbiomassArr;
+    for (my $i=0; $i< @{$masterBio}; $i++){
+
+      print "$masterBio->[$i]->{modelcompound_ref}\n";
+
+      my @cpdid = split /\//, $masterBio->[$i]->{modelcompound_ref};
+      if ($cpdid[-1] =~ /cpd/){
+        print "$cpdid[-1]\n";
+
+      }
+      else{
+        $biomass_cpd_remove = {
+           biomass_id => 'bio1',
+           biomass_compound_id => $cpdid[-1],
+           biomass_coefficient => 0
+        };
+        push (@{$tempbiomassArr},$biomass_cpd_remove );
+      }
+
+    }
+
+    print &Dumper ($tempbiomassArr);
+
+    my $edited_model = $fbaO->edit_metabolic_model({
+
+        fbamodel_id => 'fungal_template',
+        fbamodel_output_id => "master_fungal_template",
+        workspace => 'janakakbase:narrative_1513399583946',
+        compounds_to_add => [],
+        compounds_to_change => [],
+        biomasses_to_add => [],
+        biomass_compounds_to_change => $tempbiomassArr,
+        reactions_to_remove => [],
+        reactions_to_change => [],
+        reactions_to_add => [],
+        edit_compound_stoichiometry => []
+
 
     });
+
+    eval {
+       $masterBio = $wshandle->get_objects([{ref=>$edited_model->{new_fbamodel_ref}}])->[0]{data};
+       #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
+    };
+    if ($@) {
+       die "Error loading object from the workspace:\n".$@;
+    }
+
+    $masterBio->{type} = "FungalTemplate";
+
+    print "\n************ $masterBio->{type}\n";
+
+    my $obj_info_list = undef;
+    eval {
+        $obj_info_list = $wshandle->save_objects({
+            'workspace'=>'janakakbase:narrative_1513399583946',
+            'objects'=>[{
+                'type'=>'KBaseFBA.FBAModel',
+                'data'=>$masterBio,
+                'name'=>'master_fungal_template',
+                'provenance'=>$provenance
+            }]
+        });
+    };
+    if ($@) {
+        die "Error saving modified genome object to workspace:\n".$@;
+    }
+
+
+    print &Dumper ($obj_info_list);
+
+    die;
+
+
+    my $template_genome_ref = 'CM_Neuro_Cglaba_Ctropi_Aterreus.genome';
+    my $template_model_ref = 'CM_Neuro_Cglaba_Ctropi_Aterreus';
+    my $ws = 'janakakbase:narrative_1509987427391';
+
+
+
+
 
     print &Dumper ($first_model);
     die;

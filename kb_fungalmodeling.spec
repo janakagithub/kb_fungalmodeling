@@ -11,6 +11,7 @@ module kb_fungalmodeling {
         string  genome_ref;
         string  template_model;
         int  gapfill_model;
+        string media_ref;
         string  translation_policy;
         string  output_model;
     } fungalmodelbuiltInput;

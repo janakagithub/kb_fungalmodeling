@@ -26,7 +26,7 @@
             "optional": true,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "Default template" ],
+            "default_values": [ "default_temp" ],
             "field_type": "dropdown",
             "dropdown_options": {
                 "options": [
@@ -44,9 +44,9 @@
                     },
                     {
                       "value": "default_temp",
-                      "display": "Default template",
-                      "id": "iNX804",
-                      "ui_name": "Default template"
+                      "display": "Default Template",
+                      "id": "default_temp",
+                      "ui_name": "Default Template"
                     },
                     {
                       "value": "iCT646",
@@ -55,10 +55,10 @@
                       "ui_name": "Candida tropicalis iCT646"
                     },
                     {
-                      "value": "iOD907",
-                      "display": "Kluyveromyces lactis iOD907",
-                      "id": "iOD907",
-                      "ui_name": "Kluyveromyces lactis iOD907"
+                      "value": "Yeast",
+                      "display": "Yeast",
+                      "id": "Yeast",
+                      "ui_name": "Yeast"
                     },
                     {
                       "value": "iJDZ836",
@@ -111,7 +111,7 @@
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ "Translate only" ],
+            "default_values": [ "translate_only" ],
             "field_type": "dropdown",
             "dropdown_options": {
                 "options": [
