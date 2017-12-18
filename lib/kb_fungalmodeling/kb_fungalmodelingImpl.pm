@@ -133,7 +133,7 @@ sub build_fungal_model
     my $ctx = $kb_fungalmodeling::kb_fungalmodelingServer::CallContext;
     my($output);
     #BEGIN build_fungal_model
-     # Print statements to stdout/stderr are captured and available as the App log
+
     print("Starting fungal model building method. Parameters:\n");
     print(Dumper($params) . "\n");
 
@@ -159,12 +159,9 @@ sub build_fungal_model
     my $token=$ctx->token;
     my $wshandle= Workspace::WorkspaceClient->new($self->{'workspace-url'},token=>$token);
 
-
-    #my $ws_name = "secalhoun:narrative_1506371194238";
-    #my $ws_name = "janakakbase:narrative_1509376805185";
-    my $template_ws = 'janakakbase:narrative_1513399583946'; # workspace for mastermode and genome
-    my $template_genome_ref = 'fungal_template.genome'; #'CM_Neuro_Cglaba_Ctropi_Aterreus.genome';
-    my $template_model_ref = 'master_fungal_template'; #'CM_Neuro_Cglaba_Ctropi_Aterreus';
+    my $template_ws = 'janakakbase:narrative_1513399583946'; # template workspaces
+    my $template_genome_ref = 'fungal_template.genome';
+    my $template_model_ref = 'master_fungal_template';
     my $ws_name = $params->{workspace};
     my $protCompId = 'proteinComp'.$params->{genome_ref};
     my $tmpGenome;
@@ -172,7 +169,7 @@ sub build_fungal_model
 
     my $templateId = {
       default_temp => [$template_model_ref, $template_genome_ref],
-      iJL1454 => ['iJL1454', 'Aspergillus terreus iJL1454'],
+      iJL1454 => ['iJL1454', 'Aspergillus_terreus'],
       iNX804  => ['iNX804','Candida_glabrata_ASM254'],
       iCT646 => ['iCT646','Candida_tropicali_MYA-3404'],
       iOD907 => ['iOD907','GCF_000002515.2'],
@@ -180,8 +177,6 @@ sub build_fungal_model
       Yeast => ['yeast_7.6_KBase','GCF_000146045.2']
 
     };
-
-
 
     if (defined $params->{template_model}) {
 
@@ -191,9 +186,6 @@ sub build_fungal_model
       $tmpGenome = $templateId->{$params->{template_model}}->[1];
 
       print &Dumper ($templateId);
-      #print "for the moment setting template to master\n";
-      #$tmpGenome = $template_genome_ref;
-      #$tmpModel = $template_model_ref;
 
     }
     my $tran_policy;
@@ -214,8 +206,7 @@ sub build_fungal_model
 
     my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
         fbamodel_id => $tmpModel,
-        fbamodel_workspace => $template_ws, #$params->{workspace}, # ' janakakbase:narrative_1498154949048', #$ws_name,
-        proteincomparison_id => $protCompId,
+        fbamodel_workspace => $template_ws,
         proteincomparison_workspace => $params->{workspace},
         fbamodel_output_id =>  $params->{output_model},
         workspace => $params->{workspace},
@@ -255,9 +246,6 @@ sub build_fungal_model
     my $reporter_string = "Fungal model was built based upon proteome comparison $protCompId and produced the model $params->{output_model}\n";
 
 
-    #die;
-
-
     my $uid = UUID::Random::generate;
     my $report_context = {
       message => $reporter_string,
@@ -268,8 +256,6 @@ sub build_fungal_model
       file_links =>[],
       report_object_name => "Report"."modelpropagation"."-".UUID::Random::generate
     };
-
-
 
 
     my $report_response;
@@ -295,8 +281,6 @@ sub build_fungal_model
       report_ref => $report_response->{ref}
     };
     return $report_out;
-
-    #my $source_genome =$wshandle->get_objects([{ref=>"23505/233/1"}])->[0]
 
     #END build_fungal_model
     my @_bad_returns;
@@ -480,14 +464,18 @@ sub build_fungal_template
     });
 
     eval {
-       $masterBio = $wshandle->get_objects([{ref=>$edited_model->{new_fbamodel_ref}}])->[0]{data};
+       $masterBio = $wshandle->get_objects([{ref=>$edited_model->{new_fbamodel_ref}}])->[0];#{data};
        #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
     };
     if ($@) {
        die "Error loading object from the workspace:\n".$@;
     }
 
-    $masterBio->{type} = "FungalTemplate";
+    print &Dumper ($masterBio);
+    die;
+
+
+    $masterBio->{data}->{type} = "FungalGenomeScale";
 
     print "\n************ $masterBio->{type}\n";
 

@@ -55,12 +55,6 @@
                       "ui_name": "Candida tropicalis iCT646"
                     },
                     {
-                      "value": "Yeast",
-                      "display": "Yeast",
-                      "id": "Yeast",
-                      "ui_name": "Yeast"
-                    },
-                    {
                       "value": "iJDZ836",
                       "display": "Neurospora crassa iJDZ836",
                       "id": "iJDZ836",
@@ -152,6 +146,10 @@
                 {
                     "input_parameter": "translation_policy",
                     "target_property": "translation_policy"
+                },
+                {
+                    "input_parameter": "gapfill_model",
+                    "target_property": "gapfill_model"
                 },
                 {
                     "input_parameter": "template_model",
