@@ -228,6 +228,7 @@ sub build_fungal_model
             fbamodel_id => $params->{output_model},
             fbamodel_output_id => 'Gapfilled_'.$params->{output_model},
             source_fbamodel_id => $tmpModel,
+            source_fbamodel_workspace => $template_ws,
             workspace => $params->{workspace},
             target_reaction => 'bio1',
             feature_ko_list => [],
