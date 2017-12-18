@@ -207,6 +207,7 @@ sub build_fungal_model
     my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
         fbamodel_id => $tmpModel,
         fbamodel_workspace => $template_ws,
+        proteincomparison_id => $protCompId,
         proteincomparison_workspace => $params->{workspace},
         fbamodel_output_id =>  $params->{output_model},
         workspace => $params->{workspace},
