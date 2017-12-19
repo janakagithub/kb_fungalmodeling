@@ -171,20 +171,43 @@ sub build_fungal_model
       default_temp => [$template_model_ref, $template_genome_ref],
       iJL1454 => ['iJL1454', 'Aspergillus_terreus'],
       iNX804  => ['iNX804','Candida_glabrata_ASM254'],
-      iCT646 => ['iCT646','Candida_tropicali_MYA-3404'],
-      iOD907 => ['iOD907','GCF_000002515.2'],
+      iCT646 => ['iCT646_C_tropicalisMYA3404','Candida_tropicali_MYA-3404'],
+      #iOD907 => ['iOD907','GCF_000002515.2'],
       iJDZ836 => ['iJDZ836','Neurospora_crassa_OR74A'],
-      Yeast => ['yeast_7.6_KBase','GCF_000146045.2']
+      Yeast => ['yeast_7.6_KBase','Saccharomyces_cerevisiae_5288c']
 
     };
+
+  my $eachTemplateHash;
+  my @newModelArr;
+
+  foreach my $k (keys $templateId){
+    if ($k eq 'default_temp'){
+      next;
+    }
+    else{
+        eval {
+           print "retrieving individual models from template $k\n";
+           my $eachTemplate = $wshandle->get_objects([{workspace=>$template_ws,name=>$templateId->{$k}->[0]}] )->[0]{data}{modelreactions};
+           for (my $i=0; $i< @{$eachTemplate}; $i++){
+            $eachTemplateHash->{$eachTemplate->[$i]->{id}} = [$k, $templateId->{$k}->[1]];
+           }
+
+        };
+        if ($@) {
+           die "Error loading object from the workspace:\n".$@;
+        }
+    }
+
+  }
+
+
 
     if (defined $params->{template_model}) {
 
       print "Template selected as $params->{template_model} \n";
-
       $tmpModel = $templateId->{$params->{template_model}}->[0];
       $tmpGenome = $templateId->{$params->{template_model}}->[1];
-
       print &Dumper ($templateId);
 
     }
@@ -193,6 +216,8 @@ sub build_fungal_model
       $tran_policy = $params->{translation_policy};
 
     }
+
+    print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
 
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $params->{workspace},
@@ -203,30 +228,34 @@ sub build_fungal_model
         output_id => $protCompId
     });
 
+    print "Producing a draft model based on $protCompId proteome comparison\n";
 
-    my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
-        fbamodel_id => $tmpModel,
-        fbamodel_workspace => $template_ws,
-        proteincomparison_id => $protCompId,
-        proteincomparison_workspace => $params->{workspace},
-        fbamodel_output_id =>  $params->{output_model},
-        workspace => $params->{workspace},
-        keep_nogene_rxn => 1,
-        #media_id =>
-        #media_workspace =>
-        minimum_target_flux => 0.1,
-        translation_policy => $tran_policy,
-        output_id =>  $params->{output_model}
-    });
 
     my $gpModelFromSource;
     if ($params->{gapfill_model} == 1){
 
+        my $dr_model;
+        my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
+            fbamodel_id => $tmpModel,
+            fbamodel_workspace => $template_ws,
+            proteincomparison_id => $protCompId,
+            proteincomparison_workspace => $params->{workspace},
+            fbamodel_output_id =>  $params->{output_model},
+            workspace => $params->{workspace},
+            keep_nogene_rxn => 1,
+            #media_id =>
+            #media_workspace =>
+            minimum_target_flux => 0.1,
+            translation_policy => $tran_policy,
+            output_id =>  $dr_model
+        });
+
         print "Running gapfill from the source model, may take a while....\n ";
+
         $gpModelFromSource = $fbaO->gapfill_metabolic_model ({
 
-            fbamodel_id => $params->{output_model},
-            fbamodel_output_id => 'Gapfilled_'.$params->{output_model},
+            fbamodel_id => $dr_model,
+            fbamodel_output_id => $params->{output_model},
             source_fbamodel_id => $tmpModel,
             source_fbamodel_workspace => $template_ws,
             workspace => $params->{workspace},
@@ -240,14 +269,61 @@ sub build_fungal_model
     }
     else {
 
-        print "Did not run gappfilling, proudced a draft model \n";
+
+        my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
+            fbamodel_id => $tmpModel,
+            fbamodel_workspace => $template_ws,
+            proteincomparison_id => $protCompId,
+            proteincomparison_workspace => $params->{workspace},
+            fbamodel_output_id =>  $params->{output_model},
+            workspace => $params->{workspace},
+            keep_nogene_rxn => 1,
+            #media_id =>
+            #media_workspace =>
+            minimum_target_flux => 0.1,
+            translation_policy => $tran_policy,
+            output_id =>  $params->{output_model}
+        });
     }
 
        print &Dumper ($gpModelFromSource);
 
-    my $reporter_string = "Fungal model was built based upon proteome comparison $protCompId and produced the model $params->{output_model}\n";
+
+    eval {
+        #my $newModel = $wshandle->get_objects([{workspace=>'janakakbase:narrative_1509987427391',name=>'Psean1_DF_GP'}])->[0]{data}->{modelreactions};
+        my $newModel = $wshandle->get_objects([{workspace=>$template_ws,name=>$params->{output_model}}])->[0]{data}->{modelreactions};
+        for (my $i=0; $i< @{$newModel}; $i++){
+
+            push (@newModelArr,$newModel->[$i]->{id} );
+
+        }
+    };
+    if ($@) {
+           die "Error loading object from the workspace:\n".$@;
+    }
+
+    my $counterHash;
+    foreach my $r (@newModelArr){
+
+      if (exists $eachTemplateHash->{$r}){
+
+        $counterHash->{$eachTemplateHash->{$r}->[1]}++;
+      }
+      else{
+
+        $counterHash->{"ModelSEED"}++;
+
+      }
+
+    }
 
 
+    print &Dumper ($counterHash);
+
+    my $stat_string1= "Fungal model was built based based on proteome comparison $protCompId and produced the model $params->{output_model}\n The newly constructed model composed of\n ";
+    my $stat_string2 = "\nAspergillus_terreus\t$counterHash->{'Aspergillus_terreus'}\nCandida_tropicali_MYA-3404\t$counterHash->{'Candida_tropicali_MYA-3404'}\nCandida_glabrata_ASM254\t$counterHash->{'Candida_glabrata_ASM254'}\nSaccharomyces_cerevisiae_5288c\t$counterHash->{'Saccharomyces_cerevisiae_5288c'}\nNeurospora_crassa_OR74A\t$counterHash->{'Neurospora_crassa_OR74A'}";
+
+    my $reporter_string = $stat_string1.$stat_string2;
     my $uid = UUID::Random::generate;
     my $report_context = {
       message => $reporter_string,
