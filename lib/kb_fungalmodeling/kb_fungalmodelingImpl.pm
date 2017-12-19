@@ -181,6 +181,7 @@ sub build_fungal_model
   my $eachTemplateHash;
   my @newModelArr;
 
+# Generate stats
   foreach my $k (keys $templateId){
     if ($k eq 'default_temp'){
       next;
@@ -200,8 +201,6 @@ sub build_fungal_model
     }
 
   }
-
-
 
     if (defined $params->{template_model}) {
 
@@ -291,7 +290,7 @@ sub build_fungal_model
 
     eval {
         #my $newModel = $wshandle->get_objects([{workspace=>'janakakbase:narrative_1509987427391',name=>'Psean1_DF_GP'}])->[0]{data}->{modelreactions};
-        my $newModel = $wshandle->get_objects([{workspace=>$template_ws,name=>$params->{output_model}}])->[0]{data}->{modelreactions};
+        my $newModel = $wshandle->get_objects([{workspace=>$params->{workspace},name=>$params->{output_model}}])->[0]{data}->{modelreactions};
         for (my $i=0; $i< @{$newModel}; $i++){
 
             push (@newModelArr,$newModel->[$i]->{id} );
