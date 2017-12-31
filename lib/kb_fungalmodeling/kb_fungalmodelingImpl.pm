@@ -316,20 +316,54 @@ sub build_fungal_model
 
     }
 
+  my $htmlLink1 = "/kb/module/work/tmp/modelViz.html";
+  open my $mData, ">", $htmlLink1  or die "Couldn't open modelViz file $!\n";
+  print $mData qq{<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Aspergillus_terreus', $counterHash->{'Aspergillus_terreus'}],
+          ['Candida_tropicali_MYA-3404', $counterHash->{'Candida_tropicali_MYA-3404'}],
+          ['Candida_glabrata_ASM254', $counterHash->{'Candida_glabrata_ASM254'}],
+          ['Saccharomyces_cerevisiae_5288c',$counterHash->{'Saccharomyces_cerevisiae_5288c'}],
+          ['Neurospora_crassa_OR74A', $counterHash->{'Neurospora_crassa_OR74A'}]
+
+        ]);
+
+        var options = {
+          title: 'Published Model Intergreation Statistics',
+          is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>
+                  };
+  close $mData;
 
     print &Dumper ($counterHash);
 
-    my $stat_string1= "Fungal model was built based based on proteome comparison $protCompId and produced the model $params->{output_model}\n The newly constructed model composed of\n ";
-    my $stat_string2 = "\nAspergillus_terreus\t$counterHash->{'Aspergillus_terreus'}\nCandida_tropicali_MYA-3404\t$counterHash->{'Candida_tropicali_MYA-3404'}\nCandida_glabrata_ASM254\t$counterHash->{'Candida_glabrata_ASM254'}\nSaccharomyces_cerevisiae_5288c\t$counterHash->{'Saccharomyces_cerevisiae_5288c'}\nNeurospora_crassa_OR74A\t$counterHash->{'Neurospora_crassa_OR74A'}";
+    my $stat_string1= "Fungal model was built based based on proteome comparison $protCompId and produced the model $params->{output_model}\n The intergreation of published models are as follows\n ";
+    #my $stat_string2 = "\nAspergillus_terreus\t$counterHash->{'Aspergillus_terreus'}\nCandida_tropicali_MYA-3404\t$counterHash->{'Candida_tropicali_MYA-3404'}\nCandida_glabrata_ASM254\t$counterHash->{'Candida_glabrata_ASM254'}\nSaccharomyces_cerevisiae_5288c\t$counterHash->{'Saccharomyces_cerevisiae_5288c'}\nNeurospora_crassa_OR74A\t$counterHash->{'Neurospora_crassa_OR74A'}";
 
-    my $reporter_string = $stat_string1.$stat_string2;
+    my $reporter_string = $stat_string1;
     my $uid = UUID::Random::generate;
     my $report_context = {
       message => $reporter_string,
       objects_created => [],
       workspace_name => $params->{workspace},
       warnings => [],
-      html_links => [],
+      html_links => [$htmlLink1],
       file_links =>[],
       report_object_name => "Report"."modelpropagation"."-".UUID::Random::generate
     };
