@@ -316,7 +316,7 @@ sub build_fungal_model
 
     }
 
-  my $htmlLink1 = "/kb/module/work/tmp/modelViz.html";
+  my $htmlLink1 = "/kb/module/work/tmp/modelViz";
   open my $mData, ">", $htmlLink1  or die "Couldn't open modelViz file $!\n";
   print $mData qq{<html>
   <head>
