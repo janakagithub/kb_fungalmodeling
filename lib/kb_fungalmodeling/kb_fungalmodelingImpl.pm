@@ -368,6 +368,7 @@ sub build_fungal_model
       message => $reporter_string,
       objects_created => [],
       workspace_name => $params->{workspace},
+      direct_html_link_index => 0,
       warnings => [],
       html_links => [$htmlLinkHash1],
       file_links =>[],
