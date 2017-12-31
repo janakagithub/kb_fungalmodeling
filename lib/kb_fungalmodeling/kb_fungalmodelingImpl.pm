@@ -233,20 +233,20 @@ sub build_fungal_model
     my $gpModelFromSource;
     if ($params->{gapfill_model} == 1){
 
-        my $dr_model;
+        my $dr_model =$params->{genome_ref}."_draftModel";
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
             proteincomparison_id => $protCompId,
             proteincomparison_workspace => $params->{workspace},
-            fbamodel_output_id =>  $params->{output_model},
+            fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
             keep_nogene_rxn => 1,
             #media_id =>
             #media_workspace =>
             minimum_target_flux => 0.1,
-            translation_policy => $tran_policy,
-            output_id =>  $dr_model
+            translation_policy => $tran_policy
+            #output_id =>  $dr_model
         });
 
         print "Running gapfill from the source model, may take a while....\n ";
@@ -280,8 +280,8 @@ sub build_fungal_model
             #media_id =>
             #media_workspace =>
             minimum_target_flux => 0.1,
-            translation_policy => $tran_policy,
-            output_id =>  $params->{output_model}
+            translation_policy => $tran_policy
+            #output_id =>  $params->{output_model}
         });
     }
 
@@ -351,6 +351,12 @@ sub build_fungal_model
                   };
   close $mData;
 
+   my $htmlLinkHash1 = {
+        path => $htmlLink1,
+        name => 'Integrated Published Model Statistics',
+        description => 'Integrated Published Model Statistics PieChart'
+    };
+
     print &Dumper ($counterHash);
 
     my $stat_string1= "Fungal model was built based based on proteome comparison $protCompId and produced the model $params->{output_model}\n The intergreation of published models are as follows\n ";
@@ -363,7 +369,7 @@ sub build_fungal_model
       objects_created => [],
       workspace_name => $params->{workspace},
       warnings => [],
-      html_links => [$htmlLink1],
+      html_links => [$htmlLinkHash1],
       file_links =>[],
       report_object_name => "Report"."modelpropagation"."-".UUID::Random::generate
     };
