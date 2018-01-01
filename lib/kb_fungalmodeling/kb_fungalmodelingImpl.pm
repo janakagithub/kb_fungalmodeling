@@ -316,7 +316,7 @@ sub build_fungal_model
 
     }
 
-  my $htmlLink1 = "/kb/module/work/tmp/modelViz";
+  my $htmlLink1 = "/kb/module/work/tmp/modelViz.html";
   open my $mData, ">", $htmlLink1  or die "Couldn't open modelViz file $!\n";
   print $mData qq{<html>
   <head>
@@ -326,6 +326,7 @@ sub build_fungal_model
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
+          ['Organism_Name', 'Number of Reactions'],
           ['Aspergillus_terreus', $counterHash->{'Aspergillus_terreus'}],
           ['Candida_tropicali_MYA-3404', $counterHash->{'Candida_tropicali_MYA-3404'}],
           ['Candida_glabrata_ASM254', $counterHash->{'Candida_glabrata_ASM254'}],
