@@ -346,7 +346,7 @@ sub build_fungal_model
     </script>
   </head>
   <body>
-    <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+    <div id="piechart_3d" style="width: 1200px; height: 500px;"></div>
   </body>
 </html>
                   };
