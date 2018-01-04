@@ -179,6 +179,10 @@ sub build_fungal_model
     };
 
   my $eachTemplateHash;
+  my $eachModelRxns;
+  my $eachModelMSRxns;
+  my $eachModelCpds;
+  my $eachModelMSCpds;
   my @newModelArr;
 
 # Generate stats
@@ -189,9 +193,40 @@ sub build_fungal_model
     else{
         eval {
            print "retrieving individual models from template $k\n";
-           my $eachTemplate = $wshandle->get_objects([{workspace=>$template_ws,name=>$templateId->{$k}->[0]}] )->[0]{data}{modelreactions};
-           for (my $i=0; $i< @{$eachTemplate}; $i++){
-            $eachTemplateHash->{$eachTemplate->[$i]->{id}} = [$k, $templateId->{$k}->[1]];
+           my $eachTemplate = $wshandle->get_objects([{workspace=>$template_ws,name=>$templateId->{$k}->[0]}] )->[0]{data};#{modelreactions};
+
+           for (my $i=0; $i< @{$eachTemplate->{modelreactions}}; $i++){
+
+            $eachTemplateHash->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$k, $templateId->{$k}->[1]];
+            my @msr1 = split /\//, $eachTemplate->{modelreactions}->[$i]->{reaction_ref};
+            my @msr = split /_/, $msr1[-1];
+
+            if ($msr[0] eq 'rxn00000'){
+
+              $eachModelRxns->{$k}++;
+            }
+            else {
+
+              $eachModelRxns->{$k}++;
+              $eachModelMSRxns->{$k}++;
+            }
+
+           }
+
+           for (my $i=0; $i< @{$eachTemplate->{modelcompounds}}; $i++){
+            my @msc1 = split /\//, $eachTemplate->{modelcompounds}->[$i]->{compound_ref};
+            my @msc = split /_/, $msc1[-1];
+
+            if ($msc[0] eq 'cpd00000'){
+
+              $eachModelCpds->{$k}++;
+            }
+            else {
+
+              $eachModelCpds->{$k}++;
+              $eachModelMSCpds->{$k}++;
+            }
+
            }
 
         };
@@ -201,6 +236,11 @@ sub build_fungal_model
     }
 
   }
+
+  print &Dumper ($eachModelRxns);
+  print &Dumper ($eachModelMSRxns);
+  print &Dumper ($eachModelCpds);
+  print &Dumper ($eachModelMSCpds);
 
     if (defined $params->{template_model}) {
 
@@ -290,12 +330,42 @@ sub build_fungal_model
 
     eval {
         #my $newModel = $wshandle->get_objects([{workspace=>'janakakbase:narrative_1509987427391',name=>'Psean1_DF_GP'}])->[0]{data}->{modelreactions};
-        my $newModel = $wshandle->get_objects([{workspace=>$params->{workspace},name=>$params->{output_model}}])->[0]{data}->{modelreactions};
-        for (my $i=0; $i< @{$newModel}; $i++){
+        my $newModel = $wshandle->get_objects([{workspace=>$params->{workspace},name=>$params->{output_model}}])->[0]{data};# ->{modelreactions};
+        for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
 
-            push (@newModelArr,$newModel->[$i]->{id} );
+            push (@newModelArr,$newModel->{modelreactions}->[$i]->{id} );
+
+            my @msr1 = split /\//, $newModel->{modelreactions}->[$i]->{reaction_ref};
+            my @msr = split /_/, $msr1[-1];
+
+            if ($msr[0] eq 'rxn00000'){
+
+              $eachModelRxns->{ $params->{output_model}}++;
+            }
+            else {
+
+              $eachModelRxns->{ $params->{output_model}}++;
+              $eachModelMSRxns->{ $params->{output_model}}++;
+            }
 
         }
+
+        for (my $i=0; $i< @{$newModel->{modelcompounds}}; $i++){
+            my @msc1 = split /\//, $newModel->{modelcompounds}->[$i]->{compound_ref};
+            my @msc = split /_/, $msc1[-1];
+
+            if ($msc[0] eq 'cpd00000'){
+
+                $eachModelCpds->{ $params->{output_model}}++;
+              }
+            else {
+
+                $eachModelCpds->{ $params->{output_model}}++;
+                $eachModelMSCpds->{ $params->{output_model}}++;
+              }
+
+        }
+
     };
     if ($@) {
            die "Error loading object from the workspace:\n".$@;
@@ -358,6 +428,112 @@ sub build_fungal_model
         description => 'Integrated Published Model Statistics PieChart'
     };
 
+
+
+ my $htmlLink2 = "/kb/module/work/tmp/modelViz2.html";
+  open my $cData, ">", $htmlLink2  or die "Couldn't open modelViz2 file $!\n";
+  print $cData qq{<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart","bar"]});
+      google.charts.setOnLoadCallback(drawBarColorsR);
+
+       google.charts.setOnLoadCallback(drawBarColorsC);
+
+      function drawBarColorsR() {
+        var data = google.visualization.arrayToDataTable([
+          ['Organism_Name', 'Total Number of Reactions', 'Number of ModelSEED Reactions'],
+          ['Aspergillus_terreus', $eachModelRxns->{'Aspergillus_terreus'}, $eachModelMSRxns->{'Aspergillus_terreus'}],
+          ['Candida_tropicali_MYA-3404', $eachModelRxns->{'Candida_tropicali_MYA-3404'}, $eachModelMSRxns->{'Candida_tropicali_MYA-3404'}],
+          ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
+          ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
+          ['Neurospora_crassa_OR74A', $eachModelRxns->{'Neurospora_crassa_OR74A'}, $eachModelMSRxns->{'Neurospora_crassa_OR74A'}],
+          [$params->{output_model}, $eachModelRxns->{$params->{output_model}}, $eachModelMSRxns->{$params->{output_model}}]
+
+        ]);
+
+        var options = {
+        title: 'Reaction intergration statiscs',
+        chartArea: {width: '50%'},
+        colors: ['#62f442', '#41a0f4'],
+        hAxis: {
+          title: 'Reactions: published models Vs user created model',
+          minValue: 0,
+           textStyle: {
+            bold: true,
+            fontSize: 14,
+            color: '#ffab91'
+          },
+          titleTextStyle: {
+            bold: true,
+            fontSize: 12,
+            color: '#4d4d4d'
+          }
+        },
+        vAxis: {
+          title: 'Organisms'
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart_rxns'));
+      chart.draw(data, options);
+    }
+
+      function drawBarColorsC() {
+        var data = google.visualization.arrayToDataTable([
+          ['Organism_Name', 'Total Number of Compounds', 'Number of ModelSEED Compounds'],
+          ['Aspergillus_terreus', $eachModelCpds->{'Aspergillus_terreus'}, $eachModelMSCpds->{'Aspergillus_terreus'}],
+          ['Candida_tropicali_MYA-3404', $eachModelCpds->{'Candida_tropicali_MYA-3404'}, $eachModelMSCpds->{'Candida_tropicali_MYA-3404'}],
+          ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
+          ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
+          ['Neurospora_crassa_OR74A', $eachModelCpds->{'Neurospora_crassa_OR74A'}, $eachModelMSCpds->{'Neurospora_crassa_OR74A'}],
+          [$params->{output_model}, $eachModelCpds->{$params->{output_model}}, $eachModelMSCpds->{$params->{output_model}}]
+
+        ]);
+
+        var options = {
+        title: 'Compound intergration statiscs',
+        chartArea: {width: '50%'},
+        colors: ['#f44185', '#41a0f4'],
+        hAxis: {
+          title: 'Compounds: published models Vs user created model',
+          minValue: 0,
+           textStyle: {
+            bold: true,
+            fontSize: 14,
+            color: '#ffab91'
+          },
+          titleTextStyle: {
+            bold: true,
+            fontSize: 12,
+            color: '#4d4d4d'
+          }
+        },
+        vAxis: {
+          title: 'Organisms'
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart_cpds'));
+      chart.draw(data, options);
+    }
+    </script>
+  </head>
+  <body>
+    <div id="chart_rxns" style="width: 1200px; height: 500px;"></div>
+    <div id="chart_cpds" style="width: 1200px; height: 500px;"></div>
+  </body>
+</html>
+                  };
+  close $cData;
+
+   my $htmlLinkHash2 = {
+        path => $htmlLink2,
+        name => 'Integrated Reaction and Compounds Statistics',
+        description => 'Integrated Published Model Statistics Bar-charts'
+    };
+
+
+
     print &Dumper ($counterHash);
 
     my $stat_string1= "Fungal model was built based based on proteome comparison $protCompId and produced the model $params->{output_model}\n The intergreation of published models are as follows\n ";
@@ -371,7 +547,7 @@ sub build_fungal_model
       workspace_name => $params->{workspace},
       direct_html_link_index => 0,
       warnings => [],
-      html_links => [$htmlLinkHash1],
+      html_links => [$htmlLinkHash1, $htmlLinkHash2],
       file_links =>[],
       report_object_name => "Report"."modelpropagation"."-".UUID::Random::generate
     };
