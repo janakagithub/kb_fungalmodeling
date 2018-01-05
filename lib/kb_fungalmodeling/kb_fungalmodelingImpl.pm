@@ -203,12 +203,12 @@ sub build_fungal_model
 
             if ($msr[0] eq 'rxn00000'){
 
-              $eachModelRxns->{$k}++;
+              $eachModelRxns->{$templateId->{$k}->[1]}++;
             }
             else {
 
-              $eachModelRxns->{$k}++;
-              $eachModelMSRxns->{$k}++;
+              $eachModelRxns->{$templateId->{$k}->[1]}++;
+              $eachModelMSRxns->{$templateId->{$k}->[1]}++;
             }
 
            }
@@ -219,12 +219,12 @@ sub build_fungal_model
 
             if ($msc[0] eq 'cpd00000'){
 
-              $eachModelCpds->{$k}++;
+              $eachModelCpds->{$templateId->{$k}->[1]}++;
             }
             else {
 
-              $eachModelCpds->{$k}++;
-              $eachModelMSCpds->{$k}++;
+              $eachModelCpds->{$templateId->{$k}->[1]}++;
+              $eachModelMSCpds->{$templateId->{$k}->[1]}++;
             }
 
            }
