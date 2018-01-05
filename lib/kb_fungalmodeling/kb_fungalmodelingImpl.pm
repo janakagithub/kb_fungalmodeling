@@ -449,7 +449,7 @@ sub build_fungal_model
           ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
           ['Neurospora_crassa_OR74A', $eachModelRxns->{'Neurospora_crassa_OR74A'}, $eachModelMSRxns->{'Neurospora_crassa_OR74A'}],
-          [$params->{output_model}, $eachModelRxns->{$params->{output_model}}, $eachModelMSRxns->{$params->{output_model}}]
+          ['$params->{output_model}', $eachModelRxns->{$params->{output_model}}, $eachModelMSRxns->{$params->{output_model}}]
 
         ]);
 
@@ -487,7 +487,7 @@ sub build_fungal_model
           ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
           ['Neurospora_crassa_OR74A', $eachModelCpds->{'Neurospora_crassa_OR74A'}, $eachModelMSCpds->{'Neurospora_crassa_OR74A'}],
-          [$params->{output_model}, $eachModelCpds->{$params->{output_model}}, $eachModelMSCpds->{$params->{output_model}}]
+          ['$params->{output_model}', $eachModelCpds->{$params->{output_model}}, $eachModelMSCpds->{$params->{output_model}}]
 
         ]);
 
