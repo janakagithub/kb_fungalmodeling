@@ -159,7 +159,7 @@ sub build_fungal_model
     my $token=$ctx->token;
     my $wshandle= Workspace::WorkspaceClient->new($self->{'workspace-url'},token=>$token);
 
-    my $template_ws = 'janakakbase:narrative_1513399583946'; # template workspaces
+    my $template_ws = 'jplfaria:narrative_1510597445008';# 'janakakbase:narrative_1513399583946'; # template workspaces
     my $template_genome_ref = 'fungal_template.genome';
     my $template_model_ref = 'master_fungal_template';
     my $ws_name = $params->{workspace};
@@ -169,11 +169,11 @@ sub build_fungal_model
 
     my $templateId = {
       default_temp => [$template_model_ref, $template_genome_ref],
-      iJL1454 => ['iJL1454', 'Aspergillus_terreus'],
-      iNX804  => ['iNX804','Candida_glabrata_ASM254'],
-      iCT646 => ['iCT646_C_tropicalisMYA3404','Candida_tropicali_MYA-3404'],
-      #iOD907 => ['iOD907','GCF_000002515.2'],
-      iJDZ836 => ['iJDZ836','Neurospora_crassa_OR74A'],
+      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus'],
+      #iNX804  => ['iNX804','Candida_glabrata_ASM254'],
+      iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404'],
+      iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL'],
+      iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A'],
       Yeast => ['yeast_7.6_KBase','Saccharomyces_cerevisiae_5288c']
 
     };
@@ -312,7 +312,7 @@ sub build_fungal_model
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
-            proteincomparison_id => $protCompId,
+            proteincomparison_id => 'proteinCompAspergillus_oryzae_BCC7051', #$protCompId,
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $params->{output_model},
             workspace => $params->{workspace},
@@ -392,7 +392,7 @@ sub build_fungal_model
   <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-      google.charts.load("current", {packages:["corechart"]});
+      google.charts.load("current", {packages:["corechart", "bar"]});
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
@@ -413,10 +413,92 @@ sub build_fungal_model
         var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
         chart.draw(data, options);
       }
+
+       google.charts.setOnLoadCallback(drawBarColorsR);
+
+       google.charts.setOnLoadCallback(drawBarColorsC);
+
+      function drawBarColorsR() {
+        var data = google.visualization.arrayToDataTable([
+          ['Organism_Name', 'Total Number of Reactions', 'Number of ModelSEED Reactions'],
+          ['Aspergillus_terreus', $eachModelRxns->{'Aspergillus_terreus'}, $eachModelMSRxns->{'Aspergillus_terreus'}],
+          ['Candida_tropicali_MYA-3404', $eachModelRxns->{'Candida_tropicali_MYA-3404'}, $eachModelMSRxns->{'Candida_tropicali_MYA-3404'}],
+          ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
+          ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
+          ['Neurospora_crassa_OR74A', $eachModelRxns->{'Neurospora_crassa_OR74A'}, $eachModelMSRxns->{'Neurospora_crassa_OR74A'}],
+          ['$params->{output_model}', $eachModelRxns->{$params->{output_model}}, $eachModelMSRxns->{$params->{output_model}}]
+
+        ]);
+
+        var options = {
+        title: 'Reaction intergration statiscs',
+        chartArea: {width: '50%'},
+        colors: ['#62f442', '#41a0f4'],
+        hAxis: {
+          title: 'Reactions: published models Vs user created model',
+          minValue: 0,
+           textStyle: {
+            bold: true,
+            fontSize: 14,
+            color: '#ffab91'
+          },
+          titleTextStyle: {
+            bold: true,
+            fontSize: 12,
+            color: '#4d4d4d'
+          }
+        },
+        vAxis: {
+          title: 'Organisms'
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart_rxns'));
+      chart.draw(data, options);
+    }
+
+      function drawBarColorsC() {
+        var data = google.visualization.arrayToDataTable([
+          ['Organism_Name', 'Total Number of Compounds', 'Number of ModelSEED Compounds'],
+          ['Aspergillus_terreus', $eachModelCpds->{'Aspergillus_terreus'}, $eachModelMSCpds->{'Aspergillus_terreus'}],
+          ['Candida_tropicali_MYA-3404', $eachModelCpds->{'Candida_tropicali_MYA-3404'}, $eachModelMSCpds->{'Candida_tropicali_MYA-3404'}],
+          ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
+          ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
+          ['Neurospora_crassa_OR74A', $eachModelCpds->{'Neurospora_crassa_OR74A'}, $eachModelMSCpds->{'Neurospora_crassa_OR74A'}],
+          ['$params->{output_model}', $eachModelCpds->{$params->{output_model}}, $eachModelMSCpds->{$params->{output_model}}]
+
+        ]);
+
+        var options = {
+        title: 'Compound intergration statiscs',
+        chartArea: {width: '50%'},
+        colors: ['#f44185', '#41a0f4'],
+        hAxis: {
+          title: 'Compounds: published models Vs user created model',
+          minValue: 0,
+           textStyle: {
+            bold: true,
+            fontSize: 14,
+            color: '#ffab91'
+          },
+          titleTextStyle: {
+            bold: true,
+            fontSize: 12,
+            color: '#4d4d4d'
+          }
+        },
+        vAxis: {
+          title: 'Organisms'
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart_cpds'));
+      chart.draw(data, options);
+    }
     </script>
   </head>
   <body>
     <div id="piechart_3d" style="width: 1200px; height: 500px;"></div>
+    <div id="chart_rxns" style="width: 1200px; height: 500px;"></div>
+    <div id="chart_cpds" style="width: 1200px; height: 500px;"></div>
   </body>
 </html>
                   };
@@ -429,7 +511,7 @@ sub build_fungal_model
     };
 
 
-
+=head
  my $htmlLink2 = "/kb/module/work/tmp/modelViz2.html";
   open my $cData, ">", $htmlLink2  or die "Couldn't open modelViz2 file $!\n";
   print $cData qq{<html>
@@ -532,7 +614,7 @@ sub build_fungal_model
         description => 'Integrated Published Model Statistics Bar-charts'
     };
 
-
+=cut
 
     print &Dumper ($counterHash);
 
@@ -547,7 +629,7 @@ sub build_fungal_model
       workspace_name => $params->{workspace},
       direct_html_link_index => 0,
       warnings => [],
-      html_links => [$htmlLinkHash1, $htmlLinkHash2],
+      html_links => [$htmlLinkHash1],
       file_links =>[],
       report_object_name => "Report"."modelpropagation"."-".UUID::Random::generate
     };
@@ -676,6 +758,9 @@ sub build_fungal_template
     print &Dumper ($wshandle);
     my $ws = $params->{workspace};
 
+
+my $model_list = ['25992/65', '25992/60', '25992/54', '25992/26', '25992/32'];
+
 =head
 #published models considered for the template
 
@@ -684,12 +769,12 @@ sub build_fungal_template
       iCT646 => ['iCT646','Candida_tropicali_MYA-3404'],
       iOD907 => ['iOD907','GCF_000002515.2'],
       iJDZ836 => ['iJDZ836','Neurospora_crassa_OR74A'],
+=cut
 
-
-
+=head
     my $fungal_temp_community_model = $fbaO->merge_metabolic_models_into_community_model({
-       fbamodel_id_list => ["25857/11/2", "25857/12/1"],
-       fbamodel_output_id => "FungalModelTemplate",
+       fbamodel_id_list => $model_list,
+       fbamodel_output_id => "FungalTemplate",
        workspace => $params->{workspace},
        mixed_bag_model => 1
 
@@ -705,7 +790,7 @@ sub build_fungal_template
 
     my $masterBio;
     eval {
-       $masterBio = $wshandle->get_objects([{ref=>'26708/12/1'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
+       $masterBio = $wshandle->get_objects([{ref=>'25992/78/1'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
        #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
     };
     if ($@) {
@@ -743,9 +828,9 @@ sub build_fungal_template
 
     my $edited_model = $fbaO->edit_metabolic_model({
 
-        fbamodel_id => 'fungal_template',
+        fbamodel_id => 'FungalTemplate',
         fbamodel_output_id => "master_fungal_template",
-        workspace => 'janakakbase:narrative_1513399583946',
+        workspace =>  $params->{workspace},
         compounds_to_add => [],
         compounds_to_change => [],
         biomasses_to_add => [],
@@ -759,28 +844,27 @@ sub build_fungal_template
     });
 
     eval {
-       $masterBio = $wshandle->get_objects([{ref=>$edited_model->{new_fbamodel_ref}}])->[0];#{data};
+       $masterBio = $wshandle->get_objects([{ref=>$edited_model->{new_fbamodel_ref}}])->[0]{data};
        #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
     };
     if ($@) {
        die "Error loading object from the workspace:\n".$@;
     }
 
-    print &Dumper ($masterBio);
-    die;
+    #print &Dumper ($masterBio);
 
-
-    $masterBio->{data}->{type} = "FungalGenomeScale";
+    $masterBio->{type} = "FungalGenomeScale";
 
     print "\n************ $masterBio->{type}\n";
+
 
     my $obj_info_list = undef;
     eval {
         $obj_info_list = $wshandle->save_objects({
-            'workspace'=>'janakakbase:narrative_1513399583946',
+            'workspace'=>$params->{workspace},
             'objects'=>[{
                 'type'=>'KBaseFBA.FBAModel',
-                'data'=>$masterBio,
+                'data'=> $masterBio,
                 'name'=>'master_fungal_template',
                 'provenance'=>$provenance
             }]
@@ -793,18 +877,6 @@ sub build_fungal_template
 
     print &Dumper ($obj_info_list);
 
-    die;
-
-
-    my $template_genome_ref = 'CM_Neuro_Cglaba_Ctropi_Aterreus.genome';
-    my $template_model_ref = 'CM_Neuro_Cglaba_Ctropi_Aterreus';
-    my $ws = 'janakakbase:narrative_1509987427391';
-
-
-
-
-
-    print &Dumper ($first_model);
     die;
 
 
