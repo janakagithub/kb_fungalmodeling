@@ -169,8 +169,8 @@ sub build_fungal_model
 
     my $templateId = {
       default_temp => [$template_model_ref, $template_genome_ref],
-      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus'],
-      #iNX804  => ['iNX804','Candida_glabrata_ASM254'],
+      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus_NIH2624'],
+      iNX804  => ['iNX804_KBase','Candida_glabrata_ASM254'],
       iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404'],
       iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL'],
       iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A'],
@@ -400,6 +400,7 @@ sub build_fungal_model
           ['Aspergillus_terreus', $counterHash->{'Aspergillus_terreus'}],
           ['Candida_tropicali_MYA-3404', $counterHash->{'Candida_tropicali_MYA-3404'}],
           ['Candida_glabrata_ASM254', $counterHash->{'Candida_glabrata_ASM254'}],
+          ['Kluyveromyces_lactis_NRRL', $counterHash->{'Kluyveromyces_lactis_NRRL'}],
           ['Saccharomyces_cerevisiae_5288c',$counterHash->{'Saccharomyces_cerevisiae_5288c'}],
           ['Neurospora_crassa_OR74A', $counterHash->{'Neurospora_crassa_OR74A'}]
 
@@ -426,6 +427,7 @@ sub build_fungal_model
           ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
           ['Neurospora_crassa_OR74A', $eachModelRxns->{'Neurospora_crassa_OR74A'}, $eachModelMSRxns->{'Neurospora_crassa_OR74A'}],
+          ['Kluyveromyces_lactis_NRRL', $eachModelRxns->{'Kluyveromyces_lactis_NRRL'}, $eachModelMSRxns->{'Kluyveromyces_lactis_NRRL'}],
           ['$params->{output_model}', $eachModelRxns->{$params->{output_model}}, $eachModelMSRxns->{$params->{output_model}}]
 
         ]);
@@ -464,6 +466,7 @@ sub build_fungal_model
           ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
           ['Neurospora_crassa_OR74A', $eachModelCpds->{'Neurospora_crassa_OR74A'}, $eachModelMSCpds->{'Neurospora_crassa_OR74A'}],
+          ['Kluyveromyces_lactis_NRRL', $eachModelCpds->{'Kluyveromyces_lactis_NRRL'}, $eachModelMSCpds->{'Kluyveromyces_lactis_NRRL'}],
           ['$params->{output_model}', $eachModelCpds->{$params->{output_model}}, $eachModelMSCpds->{$params->{output_model}}]
 
         ]);
@@ -759,7 +762,7 @@ sub build_fungal_template
     my $ws = $params->{workspace};
 
 
-my $model_list = ['25992/65', '25992/60', '25992/54', '25992/26', '25992/32'];
+my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '25992/32'];
 
 =head
 #published models considered for the template
@@ -779,8 +782,10 @@ my $model_list = ['25992/65', '25992/60', '25992/54', '25992/26', '25992/32'];
        mixed_bag_model => 1
 
     });
-=cut
 
+    print &Dumper ($fungal_temp_community_model);
+    die;
+=cut
     my $crassaModel =  '25857/11/2';
     my $start_genome_id  = '25857/2/3'; # 'Neurospora_crassa_OR74A',
     my $start_model_name = '25857/11/2'; # iJDZ836";
@@ -790,7 +795,7 @@ my $model_list = ['25992/65', '25992/60', '25992/54', '25992/26', '25992/32'];
 
     my $masterBio;
     eval {
-       $masterBio = $wshandle->get_objects([{ref=>'25992/78/1'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
+       $masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
        #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
     };
     if ($@) {
