@@ -174,7 +174,7 @@ sub build_fungal_model
       iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404'],
       iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL'],
       iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A'],
-      Yeast => ['yeast_7.6_KBase','Saccharomyces_cerevisiae_5288c']
+      Yeast => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c']
 
     };
 
@@ -397,7 +397,7 @@ sub build_fungal_model
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
           ['Organism_Name', 'Number of Reactions'],
-          ['Aspergillus_terreus', $counterHash->{'Aspergillus_terreus'}],
+          ['Aspergillus_terreus_NIH2624', $counterHash->{'Aspergillus_terreus_NIH2624'}],
           ['Candida_tropicali_MYA-3404', $counterHash->{'Candida_tropicali_MYA-3404'}],
           ['Candida_glabrata_ASM254', $counterHash->{'Candida_glabrata_ASM254'}],
           ['Kluyveromyces_lactis_NRRL', $counterHash->{'Kluyveromyces_lactis_NRRL'}],
@@ -422,7 +422,7 @@ sub build_fungal_model
       function drawBarColorsR() {
         var data = google.visualization.arrayToDataTable([
           ['Organism_Name', 'Total Number of Reactions', 'Number of ModelSEED Reactions'],
-          ['Aspergillus_terreus', $eachModelRxns->{'Aspergillus_terreus'}, $eachModelMSRxns->{'Aspergillus_terreus'}],
+          ['Aspergillus_terreus_NIH2624', $eachModelRxns->{'Aspergillus_terreus_NIH2624'}, $eachModelMSRxns->{'Aspergillus_terreus_NIH2624'}],
           ['Candida_tropicali_MYA-3404', $eachModelRxns->{'Candida_tropicali_MYA-3404'}, $eachModelMSRxns->{'Candida_tropicali_MYA-3404'}],
           ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
@@ -461,7 +461,7 @@ sub build_fungal_model
       function drawBarColorsC() {
         var data = google.visualization.arrayToDataTable([
           ['Organism_Name', 'Total Number of Compounds', 'Number of ModelSEED Compounds'],
-          ['Aspergillus_terreus', $eachModelCpds->{'Aspergillus_terreus'}, $eachModelMSCpds->{'Aspergillus_terreus'}],
+          ['Aspergillus_terreus_NIH2624', $eachModelCpds->{'Aspergillus_terreus_NIH2624'}, $eachModelMSCpds->{'Aspergillus_terreus_NIH2624'}],
           ['Candida_tropicali_MYA-3404', $eachModelCpds->{'Candida_tropicali_MYA-3404'}, $eachModelMSCpds->{'Candida_tropicali_MYA-3404'}],
           ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
@@ -529,7 +529,7 @@ sub build_fungal_model
       function drawBarColorsR() {
         var data = google.visualization.arrayToDataTable([
           ['Organism_Name', 'Total Number of Reactions', 'Number of ModelSEED Reactions'],
-          ['Aspergillus_terreus', $eachModelRxns->{'Aspergillus_terreus'}, $eachModelMSRxns->{'Aspergillus_terreus'}],
+          ['Aspergillus_terreus_NIH2624', $eachModelRxns->{'Aspergillus_terreus_NIH2624'}, $eachModelMSRxns->{'Aspergillus_terreus_NIH2624'}],
           ['Candida_tropicali_MYA-3404', $eachModelRxns->{'Candida_tropicali_MYA-3404'}, $eachModelMSRxns->{'Candida_tropicali_MYA-3404'}],
           ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
@@ -567,7 +567,7 @@ sub build_fungal_model
       function drawBarColorsC() {
         var data = google.visualization.arrayToDataTable([
           ['Organism_Name', 'Total Number of Compounds', 'Number of ModelSEED Compounds'],
-          ['Aspergillus_terreus', $eachModelCpds->{'Aspergillus_terreus'}, $eachModelMSCpds->{'Aspergillus_terreus'}],
+          ['Aspergillus_terreus_NIH2624', $eachModelCpds->{'Aspergillus_terreus_NIH2624'}, $eachModelMSCpds->{'Aspergillus_terreus_NIH2624'}],
           ['Candida_tropicali_MYA-3404', $eachModelCpds->{'Candida_tropicali_MYA-3404'}, $eachModelMSCpds->{'Candida_tropicali_MYA-3404'}],
           ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
           ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
@@ -622,7 +622,7 @@ sub build_fungal_model
     print &Dumper ($counterHash);
 
     my $stat_string1= "Fungal model was built based based on proteome comparison $protCompId and produced the model $params->{output_model}\n The intergreation of published models are as follows\n ";
-    #my $stat_string2 = "\nAspergillus_terreus\t$counterHash->{'Aspergillus_terreus'}\nCandida_tropicali_MYA-3404\t$counterHash->{'Candida_tropicali_MYA-3404'}\nCandida_glabrata_ASM254\t$counterHash->{'Candida_glabrata_ASM254'}\nSaccharomyces_cerevisiae_5288c\t$counterHash->{'Saccharomyces_cerevisiae_5288c'}\nNeurospora_crassa_OR74A\t$counterHash->{'Neurospora_crassa_OR74A'}";
+    #my $stat_string2 = "\nAspergillus_terreus\t$counterHash->{'Aspergillus_terreus_NIH2624'}\nCandida_tropicali_MYA-3404\t$counterHash->{'Candida_tropicali_MYA-3404'}\nCandida_glabrata_ASM254\t$counterHash->{'Candida_glabrata_ASM254'}\nSaccharomyces_cerevisiae_5288c\t$counterHash->{'Saccharomyces_cerevisiae_5288c'}\nNeurospora_crassa_OR74A\t$counterHash->{'Neurospora_crassa_OR74A'}";
 
     my $reporter_string = $stat_string1;
     my $uid = UUID::Random::generate;
@@ -762,7 +762,7 @@ sub build_fungal_template
     my $ws = $params->{workspace};
 
 
-my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '25992/32'];
+my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '25992/99'];
 
 =head
 #published models considered for the template
@@ -795,12 +795,17 @@ my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '2
 
     my $masterBio;
     eval {
-       $masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
-       #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
+       #$masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
+       $masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data};
+
     };
     if ($@) {
        die "Error loading object from the workspace:\n".$@;
     }
+
+print &Dumper ($masterBio);
+die;
+
 
    my $biomass_cpd_remove = {
        biomass_id => 'bio1',
