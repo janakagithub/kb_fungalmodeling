@@ -312,7 +312,7 @@ sub build_fungal_model
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
-            proteincomparison_id => 'proteinCompAspergillus_oryzae_BCC7051', #$protCompId,
+            proteincomparison_id => $protCompId, #proteinCompAspergillus_oryzae_BCC7051,
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $params->{output_model},
             workspace => $params->{workspace},
@@ -795,16 +795,16 @@ my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '2
 
     my $masterBio;
     eval {
-       #$masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
-       $masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data};
+       $masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
+       #$masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data};
 
     };
     if ($@) {
        die "Error loading object from the workspace:\n".$@;
     }
 
-print &Dumper ($masterBio);
-die;
+    #print &Dumper ($masterBio);
+    #die;
 
 
    my $biomass_cpd_remove = {
