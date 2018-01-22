@@ -29,6 +29,194 @@ use Config::IniFiles;
 use Bio::SeqIO;
 use UUID::Random;
 use Data::Dumper;
+
+
+
+
+
+sub generate_pie_chart
+{
+    my($uMcounterHashGPR, $templateId) = @_;
+
+    #Setting the pieChart on rxns
+    my $piechartStringHeader = "['Organism_Name', 'Number of Reactions']";
+    my $piechartString =[];
+    push (@{$piechartString}, $piechartStringHeader);
+
+    foreach my $k (keys $templateId){
+
+        if ($k eq 'default_temp'){
+            next;
+        }
+        else{
+            my $tempStr = "['$templateId->{$k}->[1]','$uMcounterHashGPR->{$templateId->{$k}->[1]}']";
+            push (@{$piechartString}, $tempStr);
+        }
+
+    }
+
+    my $pieChartRxn = join(',' , @{$piechartString});
+
+    return $pieChartRxn
+}
+
+
+sub generate_rxn_barchart
+{
+     my($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount,$templateId, $uM, $uMgprRxnCount) = @_;
+    my $barChartRxnsHeader = "['Organism_Name', 'Total Number of Reactions', 'GPR Reactions', Number of ModelSEED Reactions']";
+    my $barChartRxnString = [];
+
+    push (@{$barChartRxnString}, $barChartRxnsHeader );
+    foreach my $k (keys $templateId){
+
+        if ($k eq 'default_temp'){
+            next;
+        }
+        else{
+            my $tempStr = "['$templateId->{$k}->[1]','$eachModelRxns->{$templateId->{$k}->[1]}','$eachModelGARxnsCount->{$templateId->{$k}->[1]}','$eachModelMSRxns->{$templateId->{$k}->[1]}' ]";
+            push (@{$barChartRxnString}, $tempStr);
+        }
+
+    }
+    my $uMstring = "['$uM', '$eachModelRxns->{$uM}', '$uMgprRxnCount', '$eachModelMSRxns->{$uM}']";
+    push (@{$barChartRxnString}, $uMstring);
+    my $barString = join(',' , @{$barChartRxnString});
+    return $barString;
+
+}
+
+sub generate_cpd_barchart
+{
+     my($eachModelCpds, $eachModelMSCpds,$templateId,$uM) = @_;
+    my $barChartCpdsHeader = "['Organism_Name', 'Total Number of Compounds', 'Number of ModelSEED Compounds']";
+    my $barChartCpdString = [];
+
+    push (@{$barChartCpdString}, $barChartCpdsHeader );
+    foreach my $k (keys $templateId){
+
+        if ($k eq 'default_temp'){
+            next;
+        }
+        else{
+            my $tempStr = "['$templateId->{$k}->[1]','$eachModelCpds->{$templateId->{$k}->[1]}','$eachModelMSCpds->{$templateId->{$k}->[1]}' ]";
+            push (@{$barChartCpdString}, $tempStr);
+        }
+
+    }
+    my $uMstring = "['$uM', '$eachModelCpds->{$uM}', '$eachModelMSCpds->{$uM}']";
+    push (@{$barChartCpdString}, $uMstring);
+
+    my $barString = join(',' , @{$barChartCpdString});
+    return $barString;
+
+}
+
+
+sub make_report_page
+{
+
+  my($pieChartRxn,$barChartRxn,$barChartCpds) = @_;
+  my $htmlLink1 = "/kb/module/work/tmp/modelViz.html";
+  open my $mData, ">", $htmlLink1  or die "Couldn't open modelViz file $!\n";
+  print $mData qq{<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart", "bar"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([$pieChartRxn]);
+
+        var options = {
+          title: 'Published Model Intergreation Statistics',
+          is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart.draw(data, options);
+      }
+
+       google.charts.setOnLoadCallback(drawBarColorsR);
+       google.charts.setOnLoadCallback(drawBarColorsC);
+
+      function drawBarColorsR() {
+        var data = google.visualization.arrayToDataTable([$barChartRxn]);
+
+        var options = {
+        title: 'Reaction intergration statiscs',
+        chartArea: {width: '50%'},
+        colors: ['#62f442', '#41a0f4', '#ffab91'],
+        hAxis: {
+          title: 'Reactions: published models Vs user created model',
+          minValue: 0,
+           textStyle: {
+            bold: true,
+            fontSize: 14,
+            color: '#ffab91'
+          },
+          titleTextStyle: {
+            bold: true,
+            fontSize: 12,
+            color: '#4d4d4d'
+          }
+        },
+        vAxis: {
+          title: 'Organisms'
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart_rxns'));
+      chart.draw(data, options);
+    }
+
+      function drawBarColorsC() {
+        var data = google.visualization.arrayToDataTable([$barChartCpds]);
+
+        var options = {
+        title: 'Compound intergration statiscs',
+        chartArea: {width: '50%'},
+        colors: ['#f44185', '#41a0f4'],
+        hAxis: {
+          title: 'Compounds: published models Vs user created model',
+          minValue: 0,
+           textStyle: {
+            bold: true,
+            fontSize: 14,
+            color: '#ffab91'
+          },
+          titleTextStyle: {
+            bold: true,
+            fontSize: 12,
+            color: '#4d4d4d'
+          }
+        },
+        vAxis: {
+          title: 'Organisms'
+        }
+      };
+      var chart = new google.visualization.BarChart(document.getElementById('chart_cpds'));
+      chart.draw(data, options);
+    }
+    </script>
+  </head>
+  <body>
+    <div id="piechart_3d" style="width: 1200px; height: 500px;"></div>
+    <div id="chart_rxns" style="width: 1200px; height: 500px;"></div>
+    <div id="chart_cpds" style="width: 1200px; height: 500px;"></div>
+  </body>
+</html>
+                  };
+  close $mData;
+
+   my $htmlLinkHash1 = {
+        path => $htmlLink1,
+        name => 'Integrated Published Model Statistics',
+        description => 'Integrated Published Model Statistics PieChart'
+    };
+
+   return $htmlLinkHash1;
+}
+
 #END_HEADER
 
 sub new
@@ -133,7 +321,8 @@ sub build_fungal_model
     my $ctx = $kb_fungalmodeling::kb_fungalmodelingServer::CallContext;
     my($output);
     #BEGIN build_fungal_model
-
+    my $token=$ctx->token;
+    my $provenance=$ctx->provenance;
     print("Starting fungal model building method. Parameters:\n");
     print(Dumper($params) . "\n");
 
@@ -160,7 +349,7 @@ sub build_fungal_model
     my $wshandle= Workspace::WorkspaceClient->new($self->{'workspace-url'},token=>$token);
 
     my $template_ws = 'jplfaria:narrative_1510597445008';# 'janakakbase:narrative_1513399583946'; # template workspaces
-    my $template_genome_ref = 'fungal_template.genome';
+    my $template_genome_ref = 'FungalTemplate.genome';
     my $template_model_ref = 'master_fungal_template';
     my $ws_name = $params->{workspace};
     my $protCompId = 'proteinComp'.$params->{genome_ref};
@@ -174,44 +363,88 @@ sub build_fungal_model
       iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404'],
       iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL'],
       iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A'],
+      iLC915 =>  ['iLC915_KBase', 'Komagataella_phaffii_GS115'],
+      iRL766 => ['iRL766_KBase', 'Eremothecium_gossypii_ATCC_10895'],
+      #iMA871 => ['iMA871_KBase', 'Aspergillus_niger_CBS_513'],
+      iAL1006 => ['iAL1006_KBase', 'Penicillium_rubens_Wisconsin'],
+      iSS884 =>  ['iSS884_KBase', 'Scheffersomyces_stipitis_CBS'],
+      iNL895 =>  ['iNL895_KBase', 'Yarrowia_lipolytica_CLIB122'],
+      iWV1213 => ['iWV1213_KBase', 'Mucor_circinelloides_CBS277'],
       Yeast => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c']
 
     };
 
   my $eachTemplateHash;
+  my $eachTemplateHashSplit;
   my $eachModelRxns;
   my $eachModelMSRxns;
   my $eachModelCpds;
   my $eachModelMSCpds;
+  my $eachModelGARxns;
+  my $eachModelGARCount;
+  my $eachModelNonGARxns;
+  my $eachModelBM;
+  my $eachModelGARxnsCount;
   my @newModelArr;
+  my $templateGenomeRefs;
 
 # Generate stats
   foreach my $k (keys $templateId){
     if ($k eq 'default_temp'){
+      $templateGenomeRefs->{$k} = '25992/104';
       next;
     }
     else{
         eval {
            print "retrieving individual models from template $k\n";
            my $eachTemplate = $wshandle->get_objects([{workspace=>$template_ws,name=>$templateId->{$k}->[0]}] )->[0]{data};#{modelreactions};
-
+           $templateGenomeRefs->{$k} = $eachTemplate->{genome_ref};
+           $eachModelBM->{$templateId->{$k}->[1]} = $eachTemplate->{biomasses};
            for (my $i=0; $i< @{$eachTemplate->{modelreactions}}; $i++){
 
-            $eachTemplateHash->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$k, $templateId->{$k}->[1]];
+
+            my @rid = split /_/, $eachTemplate->{modelreactions}->[$i]->{id};
+            $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }  = [$k, $templateId->{$k}->[1]];
+
+            $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $eachTemplate->{modelreactions}->[$i]->{id}}  = [$k, $templateId->{$k}->[1]];
             my @msr1 = split /\//, $eachTemplate->{modelreactions}->[$i]->{reaction_ref};
             my @msr = split /_/, $msr1[-1];
 
             if ($msr[0] eq 'rxn00000'){
 
               $eachModelRxns->{$templateId->{$k}->[1]}++;
+
+              if ($eachTemplate->{modelreactions}->[$i]->{imported_gpr}){
+
+                $eachModelGARxns->{ $templateId->{$k}->[1] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                $eachModelGARCount->{$templateId->{$k}->[1]}++;
+              }
+              else{
+                push (@{$eachModelNonGARxns->{$templateId->{$k}->[1]}}, $eachTemplate->{modelreactions}->[$i]->{id})
+
+              }
+
+
             }
             else {
 
               $eachModelRxns->{$templateId->{$k}->[1]}++;
               $eachModelMSRxns->{$templateId->{$k}->[1]}++;
+
+              if ($eachTemplate->{modelreactions}->[$i]->{imported_gpr}){
+
+                $eachModelGARxns->{ $templateId->{$k}->[1] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                $eachModelGARxnsCount->{$templateId->{$k}->[1]}++;
+
+              }
+              else{
+                push (@{$eachModelNonGARxns->{$templateId->{$k}->[1]}}, $eachTemplate->{modelreactions}->[$i]->{id})
+
+              }
+
             }
 
-           }
+           } # for
 
            for (my $i=0; $i< @{$eachTemplate->{modelcompounds}}; $i++){
             my @msc1 = split /\//, $eachTemplate->{modelcompounds}->[$i]->{compound_ref};
@@ -231,22 +464,22 @@ sub build_fungal_model
 
         };
         if ($@) {
-           die "Error loading object from the workspace:\n".$@;
+          die "Error loading object from the workspace:\n".$@;
         }
     }
 
   }
-
-  print &Dumper ($eachModelRxns);
-  print &Dumper ($eachModelMSRxns);
-  print &Dumper ($eachModelCpds);
-  print &Dumper ($eachModelMSCpds);
+  #print &Dumper ($eachModelRxns);
+  #print &Dumper ($eachModelMSRxns);
+  #print &Dumper ($eachModelCpds);
+  #print &Dumper ($eachModelMSCpds);
 
     if (defined $params->{template_model}) {
 
       print "Template selected as $params->{template_model} \n";
       $tmpModel = $templateId->{$params->{template_model}}->[0];
       $tmpGenome = $templateId->{$params->{template_model}}->[1];
+      #$tmpGenome = $templateGenomeRefs->{$params->{template_model}};
       print &Dumper ($templateId);
 
     }
@@ -257,7 +490,6 @@ sub build_fungal_model
     }
 
     print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
-
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $params->{workspace},
         genome1id => $params->{genome_ref},
@@ -266,7 +498,6 @@ sub build_fungal_model
         output_ws => $params->{workspace},
         output_id => $protCompId
     });
-
     print "Producing a draft model based on $protCompId proteome comparison\n";
 
 
@@ -312,7 +543,7 @@ sub build_fungal_model
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
-            proteincomparison_id => $protCompId, #proteinCompAspergillus_oryzae_BCC7051,
+            proteincomparison_id => $protCompId, #'proteinCompPsean1'
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $params->{output_model},
             workspace => $params->{workspace},
@@ -321,25 +552,22 @@ sub build_fungal_model
             #media_workspace =>
             minimum_target_flux => 0.1,
             translation_policy => $tran_policy
-            #output_id =>  $params->{output_model}
+
         });
     }
 
-       print &Dumper ($gpModelFromSource);
-
-
+     my $userModelRxns;
+     my $newModel;
     eval {
-        #my $newModel = $wshandle->get_objects([{workspace=>'janakakbase:narrative_1509987427391',name=>'Psean1_DF_GP'}])->[0]{data}->{modelreactions};
-        my $newModel = $wshandle->get_objects([{workspace=>$params->{workspace},name=>$params->{output_model}}])->[0]{data};# ->{modelreactions};
-        for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
+        $newModel = $wshandle->get_objects([{workspace=>$params->{workspace}, name=>$params->{output_model}}])->[0]{data};# ->{modelreactions};
 
+        for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
+            $userModelRxns->{$newModel->{modelreactions}->[$i]->{id}} =1;
             push (@newModelArr,$newModel->{modelreactions}->[$i]->{id} );
 
             my @msr1 = split /\//, $newModel->{modelreactions}->[$i]->{reaction_ref};
             my @msr = split /_/, $msr1[-1];
-
             if ($msr[0] eq 'rxn00000'){
-
               $eachModelRxns->{ $params->{output_model}}++;
             }
             else {
@@ -353,13 +581,10 @@ sub build_fungal_model
         for (my $i=0; $i< @{$newModel->{modelcompounds}}; $i++){
             my @msc1 = split /\//, $newModel->{modelcompounds}->[$i]->{compound_ref};
             my @msc = split /_/, $msc1[-1];
-
             if ($msc[0] eq 'cpd00000'){
-
                 $eachModelCpds->{ $params->{output_model}}++;
               }
             else {
-
                 $eachModelCpds->{ $params->{output_model}}++;
                 $eachModelMSCpds->{ $params->{output_model}}++;
               }
@@ -371,259 +596,196 @@ sub build_fungal_model
            die "Error loading object from the workspace:\n".$@;
     }
 
-    my $counterHash;
-    foreach my $r (@newModelArr){
+    #########################\
+    my $uMcounterHashGPR;
+    my $uMcounterHashNOGPR;
+    my $uMGPRrxns;
+    my $uMNOGPRrxns;
+    my $uMgprRxnCount =0;
+    for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
 
-      if (exists $eachTemplateHash->{$r}){
+        my $gprCheck = $newModel->{modelreactions}->[$i];
+        my @rid = split /_/, $gprCheck->{id};
+        if (!@{$gprCheck->{modelReactionProteins} }){
 
-        $counterHash->{$eachTemplateHash->{$r}->[1]}++;
-      }
-      else{
+            foreach my $k (keys $templateId){
+                if ($k eq 'default_temp'){
+                    next;
+                }
+                elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
+                    $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                    $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                    #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                }
+                elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
+                    $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                    $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                    #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                }
+                else{
+                  next;
+                }
 
-        $counterHash->{"ModelSEED"}++;
+            }
 
-      }
-
-    }
-
-  my $htmlLink1 = "/kb/module/work/tmp/modelViz.html";
-  open my $mData, ">", $htmlLink1  or die "Couldn't open modelViz file $!\n";
-  print $mData qq{<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load("current", {packages:["corechart", "bar"]});
-      google.charts.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Organism_Name', 'Number of Reactions'],
-          ['Aspergillus_terreus_NIH2624', $counterHash->{'Aspergillus_terreus_NIH2624'}],
-          ['Candida_tropicali_MYA-3404', $counterHash->{'Candida_tropicali_MYA-3404'}],
-          ['Candida_glabrata_ASM254', $counterHash->{'Candida_glabrata_ASM254'}],
-          ['Kluyveromyces_lactis_NRRL', $counterHash->{'Kluyveromyces_lactis_NRRL'}],
-          ['Saccharomyces_cerevisiae_5288c',$counterHash->{'Saccharomyces_cerevisiae_5288c'}],
-          ['Neurospora_crassa_OR74A', $counterHash->{'Neurospora_crassa_OR74A'}]
-
-        ]);
-
-        var options = {
-          title: 'Published Model Intergreation Statistics',
-          is3D: true,
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
-        chart.draw(data, options);
-      }
-
-       google.charts.setOnLoadCallback(drawBarColorsR);
-
-       google.charts.setOnLoadCallback(drawBarColorsC);
-
-      function drawBarColorsR() {
-        var data = google.visualization.arrayToDataTable([
-          ['Organism_Name', 'Total Number of Reactions', 'Number of ModelSEED Reactions'],
-          ['Aspergillus_terreus_NIH2624', $eachModelRxns->{'Aspergillus_terreus_NIH2624'}, $eachModelMSRxns->{'Aspergillus_terreus_NIH2624'}],
-          ['Candida_tropicali_MYA-3404', $eachModelRxns->{'Candida_tropicali_MYA-3404'}, $eachModelMSRxns->{'Candida_tropicali_MYA-3404'}],
-          ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
-          ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
-          ['Neurospora_crassa_OR74A', $eachModelRxns->{'Neurospora_crassa_OR74A'}, $eachModelMSRxns->{'Neurospora_crassa_OR74A'}],
-          ['Kluyveromyces_lactis_NRRL', $eachModelRxns->{'Kluyveromyces_lactis_NRRL'}, $eachModelMSRxns->{'Kluyveromyces_lactis_NRRL'}],
-          ['$params->{output_model}', $eachModelRxns->{$params->{output_model}}, $eachModelMSRxns->{$params->{output_model}}]
-
-        ]);
-
-        var options = {
-        title: 'Reaction intergration statiscs',
-        chartArea: {width: '50%'},
-        colors: ['#62f442', '#41a0f4'],
-        hAxis: {
-          title: 'Reactions: published models Vs user created model',
-          minValue: 0,
-           textStyle: {
-            bold: true,
-            fontSize: 14,
-            color: '#ffab91'
-          },
-          titleTextStyle: {
-            bold: true,
-            fontSize: 12,
-            color: '#4d4d4d'
-          }
-        },
-        vAxis: {
-          title: 'Organisms'
         }
-      };
-      var chart = new google.visualization.BarChart(document.getElementById('chart_rxns'));
-      chart.draw(data, options);
-    }
 
-      function drawBarColorsC() {
-        var data = google.visualization.arrayToDataTable([
-          ['Organism_Name', 'Total Number of Compounds', 'Number of ModelSEED Compounds'],
-          ['Aspergillus_terreus_NIH2624', $eachModelCpds->{'Aspergillus_terreus_NIH2624'}, $eachModelMSCpds->{'Aspergillus_terreus_NIH2624'}],
-          ['Candida_tropicali_MYA-3404', $eachModelCpds->{'Candida_tropicali_MYA-3404'}, $eachModelMSCpds->{'Candida_tropicali_MYA-3404'}],
-          ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
-          ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
-          ['Neurospora_crassa_OR74A', $eachModelCpds->{'Neurospora_crassa_OR74A'}, $eachModelMSCpds->{'Neurospora_crassa_OR74A'}],
-          ['Kluyveromyces_lactis_NRRL', $eachModelCpds->{'Kluyveromyces_lactis_NRRL'}, $eachModelMSCpds->{'Kluyveromyces_lactis_NRRL'}],
-          ['$params->{output_model}', $eachModelCpds->{$params->{output_model}}, $eachModelMSCpds->{$params->{output_model}}]
+        else{
 
-        ]);
+            my $gprFlag =0;
+            for (my $j=0; $j< @{$gprCheck->{modelReactionProteins}}; $j++){
 
-        var options = {
-        title: 'Compound intergration statiscs',
-        chartArea: {width: '50%'},
-        colors: ['#f44185', '#41a0f4'],
-        hAxis: {
-          title: 'Compounds: published models Vs user created model',
-          minValue: 0,
-           textStyle: {
-            bold: true,
-            fontSize: 14,
-            color: '#ffab91'
-          },
-          titleTextStyle: {
-            bold: true,
-            fontSize: 12,
-            color: '#4d4d4d'
-          }
-        },
-        vAxis: {
-          title: 'Organisms'
+                my $subGPR = $gprCheck->{modelReactionProteins}->[$j];
+
+                for (my $n=0; $n< @{$subGPR->{modelReactionProteinSubunits}}; $n++){
+                    my $eachGPR = $subGPR->{modelReactionProteinSubunits}->[$n];
+
+                    if (!@{$eachGPR->{feature_refs} }){
+                        next;
+
+                    }
+                    else{
+
+                        $gprFlag =1;
+                        last;
+                    }
+                }
+            }
+            if ($gprFlag != 0){
+                foreach my $k (keys $templateId){
+                    if ($k eq 'default_temp'){
+                    next;
+                    }
+                    elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
+                        $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
+                        $uMGPRrxns->{$gprCheck->{id}} = 1;
+                        $uMgprRxnCount++;
+                        #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
+                        $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
+                        $uMGPRrxns->{$gprCheck->{id}} = 1;
+                        $uMgprRxnCount++
+                        #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    else{
+                      next;
+                    }
+                }
+            }
+            else{
+                foreach my $k (keys $templateId){
+                    if ($k eq 'default_temp'){
+                    next;
+                    }
+                    elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
+                        $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                        $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                        #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
+                        $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                        $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                        #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    else{
+                      next;
+                    }
+                }
+            }
         }
-      };
-      var chart = new google.visualization.BarChart(document.getElementById('chart_cpds'));
-      chart.draw(data, options);
-    }
-    </script>
-  </head>
-  <body>
-    <div id="piechart_3d" style="width: 1200px; height: 500px;"></div>
-    <div id="chart_rxns" style="width: 1200px; height: 500px;"></div>
-    <div id="chart_cpds" style="width: 1200px; height: 500px;"></div>
-  </body>
-</html>
-                  };
-  close $mData;
 
-   my $htmlLinkHash1 = {
-        path => $htmlLink1,
-        name => 'Integrated Published Model Statistics',
-        description => 'Integrated Published Model Statistics PieChart'
+    }
+
+    my @sortedUmCounterHash;
+    @sortedUmCounterHash = sort {$uMcounterHashGPR->{$a} <=> $uMcounterHashGPR->{$b}} keys (%$uMcounterHashGPR);
+    #print &Dumper ($uMcounterHashGPR);
+    #print &Dumper ($uMcounterHashNOGPR);
+    #print &Dumper (\@sortedUmCounterHash);
+
+    ########################### compute the closeset template model and prep a list of non-gpr reactions to remove
+    my $removeRxnsArr = [];
+    foreach my $k (keys $uMNOGPRrxns){
+        my @rid = split /_/, $k;
+        if (exists $eachTemplateHash->{ $sortedUmCounterHash[-1] }->{ $k }){
+            next;
+        }
+        elsif (exists $eachTemplateHashSplit->{ $sortedUmCounterHash[-1] }->{ $rid[0] }){
+            next;
+        }
+        else {
+
+            push (@{$removeRxnsArr}, $k);
+        }
+    }
+
+    foreach my $k (@{$eachModelNonGARxns->{$sortedUmCounterHash[-1] } }){
+        #print "$k\t". scalar(@{$eachModelNonGARxns->{$sortedUmCounterHash[-1] } })."\n";
+    }
+
+    ## Generating Biomass
+    my $tempbiomassArr;
+    my $biomass_cpd_remove = {
+       biomass_id => '',
+       biomass_compound_id => '',
+       biomass_coefficient => 0
     };
 
 
-=head
- my $htmlLink2 = "/kb/module/work/tmp/modelViz2.html";
-  open my $cData, ">", $htmlLink2  or die "Couldn't open modelViz2 file $!\n";
-  print $cData qq{<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load("current", {packages:["corechart","bar"]});
-      google.charts.setOnLoadCallback(drawBarColorsR);
+    for (my $j=0; $j< @{$eachModelBM->{ $sortedUmCounterHash[-1]} }; $j++){
+        my $currentBiomass = $eachModelBM->{$sortedUmCounterHash[-1]}->[$j];
+        for (my $i=0; $i< @{$currentBiomass->{biomasscompounds}}; $i++){
 
-       google.charts.setOnLoadCallback(drawBarColorsC);
+            my @cpdid = split /\//, $currentBiomass->{biomasscompounds}->[$i]->{modelcompound_ref};
+            if ($cpdid[-1] =~ /cpd/){
+                print "$cpdid[-1]\n";
 
-      function drawBarColorsR() {
-        var data = google.visualization.arrayToDataTable([
-          ['Organism_Name', 'Total Number of Reactions', 'Number of ModelSEED Reactions'],
-          ['Aspergillus_terreus_NIH2624', $eachModelRxns->{'Aspergillus_terreus_NIH2624'}, $eachModelMSRxns->{'Aspergillus_terreus_NIH2624'}],
-          ['Candida_tropicali_MYA-3404', $eachModelRxns->{'Candida_tropicali_MYA-3404'}, $eachModelMSRxns->{'Candida_tropicali_MYA-3404'}],
-          ['Candida_glabrata_ASM254', $eachModelRxns->{'Candida_glabrata_ASM254'}, $eachModelMSRxns->{'Candida_glabrata_ASM254'} ],
-          ['Saccharomyces_cerevisiae_5288c',$eachModelRxns->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSRxns->{'Saccharomyces_cerevisiae_5288c'}],
-          ['Neurospora_crassa_OR74A', $eachModelRxns->{'Neurospora_crassa_OR74A'}, $eachModelMSRxns->{'Neurospora_crassa_OR74A'}],
-          ['$params->{output_model}', $eachModelRxns->{$params->{output_model}}, $eachModelMSRxns->{$params->{output_model}}]
+                 $biomass_cpd_remove = {
+                   biomass_id => $currentBiomass->{id},
+                   biomass_compound_id => $cpdid[-1],
+                   biomass_coefficient => $currentBiomass->{biomasscompounds}->[$i]->{coefficient}
+                };
+                push (@{$tempbiomassArr},$biomass_cpd_remove );
 
-        ]);
-
-        var options = {
-        title: 'Reaction intergration statiscs',
-        chartArea: {width: '50%'},
-        colors: ['#62f442', '#41a0f4'],
-        hAxis: {
-          title: 'Reactions: published models Vs user created model',
-          minValue: 0,
-           textStyle: {
-            bold: true,
-            fontSize: 14,
-            color: '#ffab91'
-          },
-          titleTextStyle: {
-            bold: true,
-            fontSize: 12,
-            color: '#4d4d4d'
-          }
-        },
-        vAxis: {
-          title: 'Organisms'
+            }
+            else{
+                $biomass_cpd_remove = {
+                   biomass_id => $currentBiomass->{id},
+                   biomass_compound_id => $cpdid[-1],
+                   biomass_coefficient => $currentBiomass->{biomasscompounds}->[$i]->{coefficient}
+                };
+                push (@{$tempbiomassArr},$biomass_cpd_remove );
+            }
         }
-      };
-      var chart = new google.visualization.BarChart(document.getElementById('chart_rxns'));
-      chart.draw(data, options);
     }
 
-      function drawBarColorsC() {
-        var data = google.visualization.arrayToDataTable([
-          ['Organism_Name', 'Total Number of Compounds', 'Number of ModelSEED Compounds'],
-          ['Aspergillus_terreus_NIH2624', $eachModelCpds->{'Aspergillus_terreus_NIH2624'}, $eachModelMSCpds->{'Aspergillus_terreus_NIH2624'}],
-          ['Candida_tropicali_MYA-3404', $eachModelCpds->{'Candida_tropicali_MYA-3404'}, $eachModelMSCpds->{'Candida_tropicali_MYA-3404'}],
-          ['Candida_glabrata_ASM254', $eachModelCpds->{'Candida_glabrata_ASM254'}, $eachModelMSCpds->{'Candida_glabrata_ASM254'} ],
-          ['Saccharomyces_cerevisiae_5288c',$eachModelCpds->{'Saccharomyces_cerevisiae_5288c'}, $eachModelMSCpds->{'Saccharomyces_cerevisiae_5288c'}],
-          ['Neurospora_crassa_OR74A', $eachModelCpds->{'Neurospora_crassa_OR74A'}, $eachModelMSCpds->{'Neurospora_crassa_OR74A'}],
-          ['$params->{output_model}', $eachModelCpds->{$params->{output_model}}, $eachModelMSCpds->{$params->{output_model}}]
+    my $edited_model = $fbaO->edit_metabolic_model({
 
-        ]);
+        fbamodel_id => $params->{workspace}.'/'.$params->{output_model},
+        fbamodel_output_id => $params->{output_model},
+        workspace =>  $params->{workspace},
+        compounds_to_add => [],
+        compounds_to_change => [],
+        biomasses_to_add => [],
+        biomass_compounds_to_change => $tempbiomassArr,
+        reactions_to_remove => join (',',@{$removeRxnsArr}),
+        reactions_to_change => [],
+        reactions_to_add => [],
+        edit_compound_stoichiometry => []
 
-        var options = {
-        title: 'Compound intergration statiscs',
-        chartArea: {width: '50%'},
-        colors: ['#f44185', '#41a0f4'],
-        hAxis: {
-          title: 'Compounds: published models Vs user created model',
-          minValue: 0,
-           textStyle: {
-            bold: true,
-            fontSize: 14,
-            color: '#ffab91'
-          },
-          titleTextStyle: {
-            bold: true,
-            fontSize: 12,
-            color: '#4d4d4d'
-          }
-        },
-        vAxis: {
-          title: 'Organisms'
-        }
-      };
-      var chart = new google.visualization.BarChart(document.getElementById('chart_cpds'));
-      chart.draw(data, options);
-    }
-    </script>
-  </head>
-  <body>
-    <div id="chart_rxns" style="width: 1200px; height: 500px;"></div>
-    <div id="chart_cpds" style="width: 1200px; height: 500px;"></div>
-  </body>
-</html>
-                  };
-  close $cData;
 
-   my $htmlLinkHash2 = {
-        path => $htmlLink2,
-        name => 'Integrated Reaction and Compounds Statistics',
-        description => 'Integrated Published Model Statistics Bar-charts'
-    };
+    });
 
-=cut
 
-    print &Dumper ($counterHash);
+    my $pieChartRxn = generate_pie_chart ($uMcounterHashGPR, $templateId);
+    my $barChartRxn = generate_rxn_barchart($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount,$templateId,$params->{output_model},$uMgprRxnCount );
+    my $barChartCpds = generate_cpd_barchart($eachModelCpds, $eachModelMSCpds,$templateId,$params->{output_model});
+    my $htmlLink1 = make_report_page ($pieChartRxn,$barChartRxn,$barChartCpds);
+    #print $pieChartRxn ."\n".$barChartRxn. "\n". $barChartCpds ."\n";
+
 
     my $stat_string1= "Fungal model was built based based on proteome comparison $protCompId and produced the model $params->{output_model}\n The intergreation of published models are as follows\n ";
-    #my $stat_string2 = "\nAspergillus_terreus\t$counterHash->{'Aspergillus_terreus_NIH2624'}\nCandida_tropicali_MYA-3404\t$counterHash->{'Candida_tropicali_MYA-3404'}\nCandida_glabrata_ASM254\t$counterHash->{'Candida_glabrata_ASM254'}\nSaccharomyces_cerevisiae_5288c\t$counterHash->{'Saccharomyces_cerevisiae_5288c'}\nNeurospora_crassa_OR74A\t$counterHash->{'Neurospora_crassa_OR74A'}";
-
+    #my $stat_string2 = "\nAspergillus_terreus\tuMcounterHashGPR0->{'Aspergillus_terreus_NIH2624'}\nCandida_tropicali_MYA-3404\tuMcounterHashGPR0->{'Candida_tropicali_MYA-3404'}\nCandida_glabrata_ASM254\tuMcounterHashGPR0->{'Candida_glabrata_ASM254'}\nSaccharomyces_cerevisiae_5288c\tuMcounterHashGPR0->{'Saccharomyces_cerevisiae_5288c'}\nNeurospora_crassa_OR74A\tuMcounterHashGPR0->{'Neurospora_crassa_OR74A'}";
     my $reporter_string = $stat_string1;
     my $uid = UUID::Random::generate;
     my $report_context = {
@@ -632,11 +794,10 @@ sub build_fungal_model
       workspace_name => $params->{workspace},
       direct_html_link_index => 0,
       warnings => [],
-      html_links => [$htmlLinkHash1],
+      html_links => [$htmlLink1],
       file_links =>[],
       report_object_name => "Report"."modelpropagation"."-".UUID::Random::generate
     };
-
 
     my $report_response;
 
@@ -763,6 +924,7 @@ sub build_fungal_template
 
 
 my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '25992/99'];
+my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3", "25992/26/10", "25992/99/2", "25992/130/1", "25992/139/1",  "25992/155/1", "25992/158/1", "25992/178/1", "25992/175/1"];
 
 =head
 #published models considered for the template
@@ -822,6 +984,21 @@ my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '2
       if ($cpdid[-1] =~ /cpd/){
         print "$cpdid[-1]\n";
 
+
+        ############################################
+        #Biomass is removed from the master template as it complicates the gapfilling, instead individual model template biomass is intergrated
+        #This can revert back, when we have sufficent level of modelSEED reaction/compound integration, which is not the case yet
+
+         $biomass_cpd_remove = {
+           biomass_id => 'bio1',
+           biomass_compound_id => $cpdid[-1],
+           biomass_coefficient => 0
+        };
+        push (@{$tempbiomassArr},$biomass_cpd_remove );
+
+
+        #############################################
+
       }
       else{
         $biomass_cpd_remove = {
@@ -845,6 +1022,7 @@ my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '2
         compounds_to_change => [],
         biomasses_to_add => [],
         biomass_compounds_to_change => $tempbiomassArr,
+        #biomass_compounds_to_change => [],
         reactions_to_remove => [],
         reactions_to_change => [],
         reactions_to_add => [],

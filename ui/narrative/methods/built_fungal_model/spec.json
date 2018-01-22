@@ -61,9 +61,9 @@
                       "ui_name": "Neurospora crassa iJDZ836"
                     },
                     {
-                      "value": "yeast",
+                      "value": "Yeast",
                       "display": "Saccharomyces cerevisiae yeast7.6",
-                      "id": "yeast",
+                      "id": "Yeast",
                       "ui_name": "Saccharomyces cerevisiae yeast7.6"
                     }
 
@@ -141,6 +141,7 @@
                 {
                     "input_parameter": "genome_ref",
                     "target_property": "genome_ref"
+
 
                 },
                 {
