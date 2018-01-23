@@ -49,7 +49,7 @@ sub generate_pie_chart
             next;
         }
         else{
-            my $tempStr = "['$templateId->{$k}->[1]','$uMcounterHashGPR->{$templateId->{$k}->[1]}']";
+            my $tempStr = "['$templateId->{$k}->[1]',$uMcounterHashGPR->{$templateId->{$k}->[1]}]";
             push (@{$piechartString}, $tempStr);
         }
 
@@ -64,7 +64,7 @@ sub generate_pie_chart
 sub generate_rxn_barchart
 {
      my($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount,$templateId, $uM, $uMgprRxnCount) = @_;
-    my $barChartRxnsHeader = "['Organism_Name', 'Total Number of Reactions', 'GPR Reactions', Number of ModelSEED Reactions']";
+    my $barChartRxnsHeader = "['Organism_Name', 'Total Number of Reactions', 'GPR Reactions', 'Number of ModelSEED Reactions']";
     my $barChartRxnString = [];
 
     push (@{$barChartRxnString}, $barChartRxnsHeader );
@@ -74,12 +74,12 @@ sub generate_rxn_barchart
             next;
         }
         else{
-            my $tempStr = "['$templateId->{$k}->[1]','$eachModelRxns->{$templateId->{$k}->[1]}','$eachModelGARxnsCount->{$templateId->{$k}->[1]}','$eachModelMSRxns->{$templateId->{$k}->[1]}' ]";
+            my $tempStr = "['$templateId->{$k}->[1]',$eachModelRxns->{$templateId->{$k}->[1]},$eachModelGARxnsCount->{$templateId->{$k}->[1]},$eachModelMSRxns->{$templateId->{$k}->[1]} ]";
             push (@{$barChartRxnString}, $tempStr);
         }
 
     }
-    my $uMstring = "['$uM', '$eachModelRxns->{$uM}', '$uMgprRxnCount', '$eachModelMSRxns->{$uM}']";
+    my $uMstring = "['$uM', $eachModelRxns->{$uM}, $uMgprRxnCount, $eachModelMSRxns->{$uM}]";
     push (@{$barChartRxnString}, $uMstring);
     my $barString = join(',' , @{$barChartRxnString});
     return $barString;
@@ -99,12 +99,12 @@ sub generate_cpd_barchart
             next;
         }
         else{
-            my $tempStr = "['$templateId->{$k}->[1]','$eachModelCpds->{$templateId->{$k}->[1]}','$eachModelMSCpds->{$templateId->{$k}->[1]}' ]";
+            my $tempStr = "['$templateId->{$k}->[1]',$eachModelCpds->{$templateId->{$k}->[1]},$eachModelMSCpds->{$templateId->{$k}->[1]} ]";
             push (@{$barChartCpdString}, $tempStr);
         }
 
     }
-    my $uMstring = "['$uM', '$eachModelCpds->{$uM}', '$eachModelMSCpds->{$uM}']";
+    my $uMstring = "['$uM', $eachModelCpds->{$uM}, $eachModelMSCpds->{$uM}]";
     push (@{$barChartCpdString}, $uMstring);
 
     my $barString = join(',' , @{$barChartCpdString});
