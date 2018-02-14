@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org
 our $VERSION = '0.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/kb_fungalmodeling.git';
-our $GIT_COMMIT_HASH = '661a64a87ffc7ed21054f1428623f1182b957f70';
+our $GIT_COMMIT_HASH = '8c77a0b01a53fd3c0c30bbebdd1c8713d76aab0e';
 
 =head1 NAME
 
@@ -63,7 +63,7 @@ sub generate_pie_chart
 
 sub generate_rxn_barchart
 {
-     my($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount,$templateId, $uM, $uMgprRxnCount) = @_;
+    my($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount,$templateId, $uM, $uMgprRxnCount) = @_;
     my $barChartRxnsHeader = "['Organism_Name', 'Total Number of Reactions', 'GPR Reactions', 'Number of ModelSEED Reactions']";
     my $barChartRxnString = [];
 
@@ -267,6 +267,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	genome_ref has a value which is a string
 	template_model has a value which is a string
 	gapfill_model has a value which is an int
+	media_ref has a value which is a string
 	translation_policy has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
@@ -286,6 +287,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	genome_ref has a value which is a string
 	template_model has a value which is a string
 	gapfill_model has a value which is an int
+	media_ref has a value which is a string
 	translation_policy has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
@@ -345,7 +347,6 @@ sub build_fungal_model
                                                             )
                                                           );
 
-    my $token=$ctx->token;
     my $wshandle= Workspace::WorkspaceClient->new($self->{'workspace-url'},token=>$token);
 
     my $template_ws = 'jplfaria:narrative_1510597445008';# 'janakakbase:narrative_1513399583946'; # template workspaces
@@ -357,20 +358,21 @@ sub build_fungal_model
     my $tmpModel;
 
     my $templateId = {
-      default_temp => [$template_model_ref, $template_genome_ref],
-      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus_NIH2624'],
-      iNX804  => ['iNX804_KBase','Candida_glabrata_ASM254'],
-      iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404'],
-      iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL'],
-      iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A'],
-      iLC915 =>  ['iLC915_KBase', 'Komagataella_phaffii_GS115'],
-      iRL766 => ['iRL766_KBase', 'Eremothecium_gossypii_ATCC_10895'],
-      #iMA871 => ['iMA871_KBase', 'Aspergillus_niger_CBS_513'],
-      iAL1006 => ['iAL1006_KBase', 'Penicillium_rubens_Wisconsin'],
-      iSS884 =>  ['iSS884_KBase', 'Scheffersomyces_stipitis_CBS'],
-      iNL895 =>  ['iNL895_KBase', 'Yarrowia_lipolytica_CLIB122'],
-      iWV1213 => ['iWV1213_KBase', 'Mucor_circinelloides_CBS277'],
-      Yeast => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c']
+      default_temp => [$template_model_ref, $template_genome_ref,$template_genome_ref],
+      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus_NIH2624','GCF_000149615.1'],
+      iNX804  => ['iNX804_KBase','Candida_glabrata_ASM254','GCF_000002545.3'],
+      iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404','GCF_000006335.2'],
+      iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL','GCF_000146045.2'],
+      iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A','GCF_000182925.2'],
+      iLC915 =>  ['iLC915_KBase', 'Komagataella_phaffii_GS115','GCF_000027005.1'],
+      iRL766 => ['iRL766_KBase', 'Eremothecium_gossypii_ATCC_10895','GCF_000091025.4'],
+      iAL1006 => ['iAL1006_KBase', 'Penicillium_rubens_Wisconsin','GCF_000226395.1'],
+      iSS884 =>  ['iSS884_KBase', 'Scheffersomyces_stipitis_CBS','GCF_000209165.1'],
+      iNL895 =>  ['iNL895_KBase', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
+      iWV1213 => ['iWV1213_KBase', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
+      iWV1314 => ['iWV1314_KBase', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
+      iMM904 => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c','GCF_000146045.2']
+
 
     };
 
@@ -417,10 +419,10 @@ sub build_fungal_model
               if ($eachTemplate->{modelreactions}->[$i]->{imported_gpr}){
 
                 $eachModelGARxns->{ $templateId->{$k}->[1] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
-                $eachModelGARCount->{$templateId->{$k}->[1]}++;
+                $eachModelGARxnsCount->{$templateId->{$k}->[1]}++;
               }
               else{
-                push (@{$eachModelNonGARxns->{$templateId->{$k}->[1]}}, $eachTemplate->{modelreactions}->[$i]->{id})
+                push (@{$eachModelNonGARxns->{$templateId->{$k}->[1]}}, $eachTemplate->{modelreactions}->[$i]->{id});
 
               }
 
@@ -438,7 +440,7 @@ sub build_fungal_model
 
               }
               else{
-                push (@{$eachModelNonGARxns->{$templateId->{$k}->[1]}}, $eachTemplate->{modelreactions}->[$i]->{id})
+                push (@{$eachModelNonGARxns->{$templateId->{$k}->[1]}}, $eachTemplate->{modelreactions}->[$i]->{id});
 
               }
 
@@ -478,7 +480,7 @@ sub build_fungal_model
 
       print "Template selected as $params->{template_model} \n";
       $tmpModel = $templateId->{$params->{template_model}}->[0];
-      $tmpGenome = $templateId->{$params->{template_model}}->[1];
+      $tmpGenome = $templateId->{$params->{template_model}}->[2];
       #$tmpGenome = $templateGenomeRefs->{$params->{template_model}};
       print &Dumper ($templateId);
 
@@ -488,6 +490,7 @@ sub build_fungal_model
       $tran_policy = $params->{translation_policy};
 
     }
+
 
     print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
     my $protComp =  $protC->blast_proteomes({
@@ -512,7 +515,7 @@ sub build_fungal_model
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
-            keep_nogene_rxn => 1,
+            keep_nogene_rxn => 0,
             #media_id =>
             #media_workspace =>
             minimum_target_flux => 0.1,
@@ -547,7 +550,7 @@ sub build_fungal_model
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $params->{output_model},
             workspace => $params->{workspace},
-            keep_nogene_rxn => 1,
+            keep_nogene_rxn => 0,
             #media_id =>
             #media_workspace =>
             minimum_target_flux => 0.1,
@@ -767,7 +770,7 @@ sub build_fungal_model
         compounds_to_add => [],
         compounds_to_change => [],
         biomasses_to_add => [],
-        biomass_compounds_to_change => $tempbiomassArr,
+        biomass_compounds_to_change => [],
         reactions_to_remove => join (',',@{$removeRxnsArr}),
         reactions_to_change => [],
         reactions_to_add => [],
@@ -827,9 +830,9 @@ sub build_fungal_model
     my @_bad_returns;
     (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
     if (@_bad_returns) {
-    	my $msg = "Invalid returns passed to build_fungal_model:\n" . join("", map { "\t$_\n" } @_bad_returns);
-    	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-    							       method_name => 'build_fungal_model');
+	my $msg = "Invalid returns passed to build_fungal_model:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'build_fungal_model');
     }
     return($output);
 }
@@ -926,16 +929,7 @@ sub build_fungal_template
 my $model_list = ['25992/65', '25992/70' ,'25992/60', '25992/54', '25992/26', '25992/99'];
 my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3", "25992/26/10", "25992/99/2", "25992/130/1", "25992/139/1",  "25992/155/1", "25992/158/1", "25992/178/1", "25992/175/1"];
 
-=head
-#published models considered for the template
-
-      iJL1454 => ['iJL1454', 'Aspergillus terreus iJL1454'],
-      iNX804  => ['iNX804','Candida_glabrata_ASM254'],
-      iCT646 => ['iCT646','Candida_tropicali_MYA-3404'],
-      iOD907 => ['iOD907','GCF_000002515.2'],
-      iJDZ836 => ['iJDZ836','Neurospora_crassa_OR74A'],
-=cut
-
+#merging into community model is done in the narrative.
 =head
     my $fungal_temp_community_model = $fbaO->merge_metabolic_models_into_community_model({
        fbamodel_id_list => $model_list,
@@ -947,26 +941,123 @@ my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3"
 
     print &Dumper ($fungal_temp_community_model);
     die;
+
+
+#build a microbial model here with the new tmeplate to extract the biomass cpds and coefficients
+
+ my $build_model = $fbaO->build_metabolic_model ({
+
+            genome_id => 'GCF_000146045.2',
+            genome_workspace => 'jplfaria:narrative_1510597445008',
+            workspace => 'jplfaria:narrative_1510597445008',
+            template_id => 'Fungi',
+            template_workspace => 'NewKBaseModelTemplates',
+            fbamodel_output_id => 'ModelWithFungalBiomass'
+
+        });
+
+
+ my $fungalBiomassModel;
+     eval {
+       $fungalBiomassModel = $wshandle->get_objects([{ref=>'25992/232'}])->[0]{data}{modelreactions};
+       #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
+    };
+    if ($@) {
+       die "Error loading object from the workspace:\n".$@;
+    }
+
+  my $removeRxnBiomassModel = [];
+ for (my $i=0; $i < @{$fungalBiomassModel}; $i++){
+    #my @rid = split /_/, $fungalBiomassModel->[$i]->{id};
+    push (@{$removeRxnBiomassModel},  $fungalBiomassModel->[$i]->{id});
+
+ }
+
+ my $edited_model = $fbaO->edit_metabolic_model({
+
+        fbamodel_id => 'ModelWithFungalBiomass', # 'GF_GMM'
+        fbamodel_output_id => 'ModelWithFungalBiomassEmpty', #'test_modifiedmodel'
+        workspace =>  $params->{workspace}, #'janakakbase:narrative_1518190880851',
+        compounds_to_add => [],
+        compounds_to_change => [],
+        biomasses_to_add => [],
+        biomass_compounds_to_change => [],
+        #biomass_compounds_to_change => [],
+        reactions_to_remove => join (',',@{$removeRxnBiomassModel}),
+        reactions_to_change => [],
+        reactions_to_add => [],
+        edit_compound_stoichiometry => []
+
+
+    });
+
+
+
 =cut
-    my $crassaModel =  '25857/11/2';
-    my $start_genome_id  = '25857/2/3'; # 'Neurospora_crassa_OR74A',
-    my $start_model_name = '25857/11/2'; # iJDZ836";
-    my $master_temp = '26394/2/1';#25857/25/1';
-    my $first_model;
+=head
 
-
+# 1.) Here remove the existing biomass of the template model/ relink the Fungal template/ and change the type
     my $masterBio;
-    eval {
-       $masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
-       #$masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data};
-
+     eval {
+       $masterBio = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data};
+       #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
     };
     if ($@) {
        die "Error loading object from the workspace:\n".$@;
     }
 
     #print &Dumper ($masterBio);
-    #die;
+
+    $masterBio->{biomasses} = [];
+    $masterBio->{template_ref} = 'NewKBaseModelTemplates/Fungi';
+    $masterBio->{type} = 'FungalGenomeScale';
+
+    print "\n************ $masterBio->{type}\n";
+
+
+    my $obj_info_list = undef;
+    eval {
+        $obj_info_list = $wshandle->save_objects({
+            'workspace'=>$params->{workspace},
+            'objects'=>[{
+                'type'=>'KBaseFBA.FBAModel',
+                'data'=> $masterBio,
+                'name'=>'FungalTemplateEmpty',
+                'provenance'=>$provenance
+            }]
+        });
+    };
+    if ($@) {
+        die "Error saving modified genome object to workspace:\n".$@;
+    }
+
+# 2.) Adding new biomass to the template should be done in the Narrative : Use edit model
+
+=cut
+
+ # 3.) Test for biomass and other info by fetching the object
+my $templateModel;
+    eval {
+       #$templateModel = $wshandle->get_objects([{ref=>'25992/228'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
+       $templateModel = $wshandle->get_objects([{ref=>'25992/78'}])->[0]{data}{biomasses};#->[0]{biomasscompounds};
+
+    };
+    if ($@) {
+       die "Error loading object from the workspace:\n".$@;
+    }
+
+
+    print &Dumper ($templateModel);
+    die;
+
+
+
+
+    my $crassaModel =  '25857/11/2';
+    my $start_genome_id  = '25857/2/3'; # 'Neurospora_crassa_OR74A',
+    my $start_model_name = '25857/11/2'; # iJDZ836";
+    my $master_temp = '26394/2/1';#25857/25/1';
+    my $first_model;
 
 
    my $biomass_cpd_remove = {
@@ -976,13 +1067,13 @@ my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3"
     };
 
     my $tempbiomassArr;
-    for (my $i=0; $i< @{$masterBio}; $i++){
+    for (my $i=0; $i< @{$templateModel}; $i++){
 
-      print "$masterBio->[$i]->{modelcompound_ref}\n";
+      print "$templateModel->[$i]->{modelcompound_ref}\t $i\n";
 
-      my @cpdid = split /\//, $masterBio->[$i]->{modelcompound_ref};
+      my @cpdid = split /\//, $templateModel->[$i]->{modelcompound_ref};
       if ($cpdid[-1] =~ /cpd/){
-        print "$cpdid[-1]\n";
+        #print "$cpdid[-1]\n";
 
 
         ############################################
@@ -1001,7 +1092,11 @@ my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3"
 
       }
       else{
-        $biomass_cpd_remove = {
+
+        print "*****$cpdid[-1]********\n";
+        die;
+        print &Dumper ($templateModel->[$i]);
+                $biomass_cpd_remove = {
            biomass_id => 'bio1',
            biomass_compound_id => $cpdid[-1],
            biomass_coefficient => 0
@@ -1011,13 +1106,97 @@ my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3"
 
     }
 
-    print &Dumper ($tempbiomassArr);
+    #print &Dumper ($templateModel);
+    #die;
+
+    #print &Dumper ($tempbiomassArr);
+
+  my $biomassModel;
+    eval {
+       $biomassModel = $wshandle->get_objects([{ref=>'25992/235'}])->[0]{data}{biomasses}->[0]{biomasscompounds};
+       #$templateModel = $wshandle->get_objects([{ref=>'25992/83'}])->[0]{data}{biomasses};#->[0]{biomasscompounds};
+
+    };
+    if ($@) {
+       die "Error loading object from the workspace:\n".$@;
+    }
+
+    my $addbiomass = [];
+    my $biomass_cpd_add = {
+       biomass_id => 'bio1',
+       biomass_compound_id => '',
+       biomass_coefficient => 0
+    };
+
+    for (my $i=0; $i< @{$biomassModel}; $i++){
+
+      print "$templateModel->[$i]->{modelcompound_ref}\t $i\n";
+
+      my @cpdid = split /\//, $biomassModel->[$i]->{modelcompound_ref};
+      if ($cpdid[-1] =~ /cpd/){
+        #print "$cpdid[-1]\n";
+
+
+        my $coefficient = $biomassModel->[$i]->{coefficient} + 0;
+         $biomass_cpd_add = {
+           biomass_id => 'bio1',
+           biomass_compound_id => $cpdid[-1],
+           biomass_coefficient => $coefficient
+        };
+        push (@{$addbiomass},$biomass_cpd_add );
+      }
+    }
+
+=head
+
+    open my $fbm, "<", "/kb/module/data/BiomassCompounds.tsv" or die "Couldn't open Biomass file $!\n";
+
+    <$fbm>;
+    my $biomass_cpd_add = {
+       biomass_id => 'bio1',
+       biomass_compound_id => '',
+       biomass_coefficient => 0
+    };
+
+    my $counter =0;
+    my $tempbiomassAdd;
+    while (my $input = <$fbm>){
+        chomp $input;
+        my @bcpdid = split /\t/, $input;
+
+        print "**$bcpdid[1]**\t###$bcpdid[2]####\n";
+
+        $bcpdid[2] = $bcpdid[2] + 0;
+
+         $biomass_cpd_add = {
+           biomass_id => 'bio1',
+           biomass_compound_id => $bcpdid[1].'_c0',
+           biomass_coefficient => $bcpdid[2]
+        };
+        push (@{$tempbiomassAdd},$biomass_cpd_add);
+
+
+    }
+=cut
+
+    my $newbiomass = {
+          biomass_name => 'bio1',
+          biomass_dna => 0.004,
+          biomass_rna => 0.0063,
+          biomass_protein => 0.45,
+          biomass_cellwall => 0.407,
+          biomass_lipid => 0.029,
+          biomass_cofactor => 0.047,
+          biomass_energy => 60
+
+        };
+
 
     my $edited_model = $fbaO->edit_metabolic_model({
 
-        fbamodel_id => 'FungalTemplate',
-        fbamodel_output_id => "master_fungal_template",
-        workspace =>  $params->{workspace},
+        fbamodel_id => 'FungalTemplateBaseBiomass', # 'GF_GMM'
+        fbamodel_output_id => 'FungalTemplateBaseBiomassEmpty', #'test_modifiedmodel'
+        workspace =>  $params->{workspace}, #'janakakbase:narrative_1518190880851',
         compounds_to_add => [],
         compounds_to_change => [],
         biomasses_to_add => [],
@@ -1031,41 +1210,26 @@ my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3"
 
     });
 
-    eval {
-       $masterBio = $wshandle->get_objects([{ref=>$edited_model->{new_fbamodel_ref}}])->[0]{data};
-       #$masterBio = $wshandle->get_objects([{ref=>$crassaModel}])->[0]{data}{biomasses};
-    };
-    if ($@) {
-       die "Error loading object from the workspace:\n".$@;
-    }
+    my $edited_model = $fbaO->edit_metabolic_model({
 
-    #print &Dumper ($masterBio);
-
-    $masterBio->{type} = "FungalGenomeScale";
-
-    print "\n************ $masterBio->{type}\n";
-
-
-    my $obj_info_list = undef;
-    eval {
-        $obj_info_list = $wshandle->save_objects({
-            'workspace'=>$params->{workspace},
-            'objects'=>[{
-                'type'=>'KBaseFBA.FBAModel',
-                'data'=> $masterBio,
-                'name'=>'master_fungal_template',
-                'provenance'=>$provenance
-            }]
-        });
-    };
-    if ($@) {
-        die "Error saving modified genome object to workspace:\n".$@;
-    }
+        fbamodel_id => 'FungalTemplateBaseBiomassEmpty', # 'GF_GMM'
+        fbamodel_output_id => 'master_fungal_template', #'test_modifiedmodel'
+        workspace =>  $params->{workspace}, #'janakakbase:narrative_1518190880851',
+        compounds_to_add => [],
+        compounds_to_change => [],
+        biomasses_to_add => [],
+        biomass_compounds_to_change => $addbiomass,
+        #biomass_compounds_to_change => [],
+        reactions_to_remove => [],
+        reactions_to_change => [],
+        reactions_to_add => [],
+        edit_compound_stoichiometry => []
 
 
-    print &Dumper ($obj_info_list);
-
+    });
     die;
+
+
 
 
     #END build_fungal_template
@@ -1075,6 +1239,469 @@ my $model_listExtended = ["25992/65/4", "25992/70/4", "25992/60/2", "25992/54/3"
 	my $msg = "Invalid returns passed to build_fungal_template:\n" . join("", map { "\t$_\n" } @_bad_returns);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
 							       method_name => 'build_fungal_template');
+    }
+    return($output);
+}
+
+
+
+
+=head2 build_model_stats
+
+  $output = $obj->build_model_stats($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a kb_fungalmodeling.fungalReferenceModelBuildInput
+$output is a kb_fungalmodeling.fungalReferenceModelBuildOutput
+fungalReferenceModelBuildInput is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	reference_genome has a value which is a string
+	reference_model has a value which is a string
+	genome_ws has a value which is a string
+	model_ws has a value which is a string
+fungalReferenceModelBuildOutput is a reference to a hash where the following keys are defined:
+	master_template_model_ref has a value which is a string
+	master_template_genome_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a kb_fungalmodeling.fungalReferenceModelBuildInput
+$output is a kb_fungalmodeling.fungalReferenceModelBuildOutput
+fungalReferenceModelBuildInput is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	reference_genome has a value which is a string
+	reference_model has a value which is a string
+	genome_ws has a value which is a string
+	model_ws has a value which is a string
+fungalReferenceModelBuildOutput is a reference to a hash where the following keys are defined:
+	master_template_model_ref has a value which is a string
+	master_template_genome_ref has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub build_model_stats
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to build_model_stats:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'build_model_stats');
+    }
+
+    my $ctx = $kb_fungalmodeling::kb_fungalmodelingServer::CallContext;
+    my($output);
+    #BEGIN build_model_stats
+    my $token=$ctx->token;
+    my $provenance=$ctx->provenance;
+    my $output = "stats_return";
+    print("Starting fungal model building method. Parameters:\n");
+    print(Dumper($params) . "\n");
+
+
+    my $fbaO = new fba_tools::fba_toolsClient( $self->{'callbackURL'},
+                                                            ( 'service_version' => 'release',
+                                                              'async_version' => 'release',
+                                                            )
+                                                           );
+
+    my $protC = new GenomeProteomeComparison::GenomeProteomeComparisonClient( $self->{'callbackURL'},
+                                                            ( 'service_version' => 'release',
+                                                              'async_version' => 'release',
+                                                            )
+                                                           );
+
+    my $reportHandle = new KBaseReport::KBaseReportClient( $self->{'callbackURL'},
+                                                            ( 'service_version' => 'release',
+                                                              'async_version' => 'release',
+                                                            )
+                                                          );
+
+    my $wshandle= Workspace::WorkspaceClient->new($self->{'workspace-url'},token=>$token);
+
+
+    my $template_ws = 'jplfaria:narrative_1510597445008';# 'janakakbase:narrative_1513399583946'; # template workspaces
+    my $template_genome_ref = 'FungalTemplate.genome';
+    my $template_model_ref = 'master_fungal_template';
+    my $ws_name = $params->{workspace};
+    my $protCompId = 'proteinComp'.$params->{genome_ref};
+    my $tmpGenome;
+    my $tmpModel;
+
+
+    my $templateId = {
+      #default_temp => [$template_model_ref, $template_genome_ref],
+      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus_NIH2624','GCF_000149615.1'],
+      iNX804  => ['iNX804_KBase','Candida_glabrata_ASM254','GCF_000002545.3'],
+      iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404','GCF_000006335.2'],
+      iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL','GCF_000146045.2'],
+      iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A','GCF_000182925.2'],
+      iLC915 =>  ['iLC915_KBase', 'Komagataella_phaffii_GS115','GCF_000027005.1'],
+      iRL766 => ['iRL766_KBase', 'Eremothecium_gossypii_ATCC_10895','GCF_000091025.4'],
+      iAL1006 => ['iAL1006_KBase', 'Penicillium_rubens_Wisconsin','GCF_000226395.1'],
+      iSS884 =>  ['iSS884_KBase', 'Scheffersomyces_stipitis_CBS','GCF_000209165.1'],
+      iNL895 =>  ['iNL895_KBase', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
+      iWV1213 => ['iWV1213_KBase', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
+      iWV1314 => ['iWV1314_KBase', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
+      iMM904 => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c','GCF_000146045.2']
+
+    };
+=head
+    foreach my $k (keys $templateId){
+
+        my $dr_model =$k."_DM";
+        my $fbaMid = $k.'_CM';
+        my $prId = $k.'_P';
+
+        print $dr_model ."\t". $fbaMid . "\t". $prId ."\n";
+
+
+        my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
+            fbamodel_id => "28321/40/1", #$fbaMid,
+            fbamodel_workspace => 'janakakbase:narrative_1518296212814',
+            proteincomparison_id => "28321/62/1", #$prId,
+            proteincomparison_workspace => 'janakakbase:narrative_1518296212814',
+            fbamodel_output_id =>  $dr_model,
+            workspace => 'janakakbase:narrative_1518296212814',
+            keep_nogene_rxn => 1,
+            #media_id =>
+            #media_workspace =>
+            minimum_target_flux => 0.1,
+            translation_policy => 'translate_only'
+            #output_id =>  $dr_model
+        });
+        die;
+        print &Dumper ($fba_modelProp);
+
+    }
+    die;
+=cut
+      my $eachTemplateHash;
+      my $eachTemplateHashSplit;
+      my $eachModelRxns;
+      my $eachModelMSRxns;
+      my $eachModelCpds;
+      my $eachModelMSCpds;
+      my $eachModelGARxns;
+      my $eachModelGARCount;
+      my $eachModelMSGARxns;
+      my $eachModelMSGARCount;
+      my $eachModelNonGARxns;
+      my $eachModelBM;
+      my $eachModelGARxnsCount;
+      my @newModelArr;
+      my $templateGenomeRefs;
+
+
+
+    # Generate stats
+    foreach my $k (keys $templateId){
+        if ($k eq 'default_temp'){
+          #$templateGenomeRefs->{$k} = '25992/104';
+          next;
+        }
+        else{
+            eval {
+                print "retrieving individual models from template $k\n";
+                my $eachTemplate = $wshandle->get_objects([{workspace=>$template_ws,name=>$templateId->{$k}->[0]}] )->[0]{data};#{modelreactions};
+                $templateGenomeRefs->{$k} = $eachTemplate->{genome_ref};
+                $eachModelBM->{$templateId->{$k}->[0]} = $eachTemplate->{biomasses};
+
+                for (my $i=0; $i< @{$eachTemplate->{modelreactions}}; $i++) {
+                    my @rid = split /_/, $eachTemplate->{modelreactions}->[$i]->{id};
+                    $eachTemplateHashSplit->{ $templateId->{$k}->[0] }->{ $rid[0] }  = [$k, $templateId->{$k}->[0]];
+
+                    $eachTemplateHash->{ $templateId->{$k}->[0] }->{ $eachTemplate->{modelreactions}->[$i]->{id}}  = [$k, $templateId->{$k}->[0]];
+                    my @msr1 = split /\//, $eachTemplate->{modelreactions}->[$i]->{reaction_ref};
+                    my @msr = split /_/, $msr1[-1];
+
+                    if ($msr[0] eq 'rxn00000'){
+
+                        $eachModelRxns->{$templateId->{$k}->[0]}++;
+
+                        if ($eachTemplate->{modelreactions}->[$i]->{imported_gpr}){
+
+                            $eachModelGARxns->{ $templateId->{$k}->[0] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                            $eachModelGARxnsCount->{$templateId->{$k}->[0]}++;
+
+
+                        }
+                        else{
+                            push (@{$eachModelNonGARxns->{$templateId->{$k}->[0]}}, $eachTemplate->{modelreactions}->[$i]->{id})
+
+                        }
+
+
+                    }
+                    else {
+
+                        $eachModelRxns->{$templateId->{$k}->[0]}++;
+                        $eachModelMSRxns->{$templateId->{$k}->[0]}++;
+
+                        if ($eachTemplate->{modelreactions}->[$i]->{imported_gpr}){
+
+                            $eachModelGARxns->{ $templateId->{$k}->[0] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                            $eachModelGARxnsCount->{$templateId->{$k}->[0]}++;
+                            $eachModelMSGARxns->{ $templateId->{$k}->[0] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                            $eachModelMSGARCount->{$templateId->{$k}->[0]}++;
+
+                        }
+                        else{
+                            push (@{$eachModelNonGARxns->{$templateId->{$k}->[0]}}, $eachTemplate->{modelreactions}->[$i]->{id});
+
+                        }
+
+                    }
+
+                } # for
+
+                for (my $i=0; $i< @{$eachTemplate->{modelcompounds}}; $i++){
+                    my @msc1 = split /\//, $eachTemplate->{modelcompounds}->[$i]->{compound_ref};
+                    my @msc = split /_/, $msc1[-1];
+
+                    if ($msc[0] eq 'cpd00000'){
+
+                        $eachModelCpds->{$templateId->{$k}->[0]}++;
+                    }
+                    else {
+
+                        $eachModelCpds->{$templateId->{$k}->[0]}++;
+                        $eachModelMSCpds->{$templateId->{$k}->[0]}++;
+                    }
+
+                }
+
+            };
+            if ($@) {
+              die "Error loading object from the workspace:\n".$@;
+            }
+        }
+
+    }
+
+    #print &Dumper ($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelMSGARCount);
+
+
+    my $userModelRxns;
+    my $newModel;
+    my $uMcounterHashGPR;
+    my $uMcounterHashNOGPR;
+    my $uMcounterHashGPRMS;
+    my $uMcounterHashNOGPRNoMS;
+
+    my $uMGPRrxns;
+    my $uMNOGPRrxns;
+    my $uMMSrxns;
+    my $mMNonMSrxns;
+    my $uMcounterHashGPRNoMS;
+    my $uMNOGPRrxnsMS;
+
+     my $userws = 'janakakbase:narrative_1518296212814';
+
+ foreach my $k (keys $templateId){
+    my $params->{output_model} = $k."_DM";
+
+    print $params->{output_model} ."\n";
+
+    eval {                                  #workspace=>$params->{workspace}, name=>$params->{output_model}
+        $newModel = $wshandle->get_objects([{ workspace=>$userws, name=> $params->{output_model} }])->[0]{data};# ->{modelreactions};
+
+        for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
+            $userModelRxns->{$newModel->{modelreactions}->[$i]->{id}} =1;
+            push (@newModelArr,$newModel->{modelreactions}->[$i]->{id} );
+
+            my @msr1 = split /\//, $newModel->{modelreactions}->[$i]->{reaction_ref};
+            my @msr = split /_/, $msr1[-1];
+            if ($msr[0] eq 'rxn00000'){
+              $eachModelRxns->{ $params->{output_model}}++;
+              $mMNonMSrxns->{$params->{output_model}}->{$newModel->{modelreactions}->[$i]->{id}} =1;
+            }
+            else {
+
+              $eachModelRxns->{ $params->{output_model}}++;
+              $eachModelMSRxns->{ $params->{output_model}}++;
+              $uMMSrxns->{$params->{output_model}}->{$newModel->{modelreactions}->[$i]->{id}} =1;
+            }
+
+        }
+
+        for (my $i=0; $i< @{$newModel->{modelcompounds}}; $i++){
+            my @msc1 = split /\//, $newModel->{modelcompounds}->[$i]->{compound_ref};
+            my @msc = split /_/, $msc1[-1];
+            if ($msc[0] eq 'cpd00000'){
+                $eachModelCpds->{ $params->{output_model}}++;
+              }
+            else {
+                $eachModelCpds->{ $params->{output_model}}++;
+                $eachModelMSCpds->{ $params->{output_model}}++;
+              }
+
+        }
+
+    };
+    if ($@) {
+        die "Error loading object from the workspace:\n".$@;
+    }
+
+}
+
+    #print &Dumper ($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelMSGARCount);
+
+
+
+
+    my $uMcounterHashNOGPRMS;
+    my $uMNOGPRrxnsMS;
+    my $uMcounterHashNOGPRNoMS;
+    my $uMNOGPRrxnsNoMS;
+    my $uMcounterHashGPRMS;
+    my $uMGPRrxnsMS;
+    my $uMGPRrxnsNoMS;
+
+        #####
+        foreach my $k (keys $templateId){
+            my $params->{output_model} = $k."_DM";
+            my $um = $k."_DM";
+            print $params->{output_model} ."\n";
+            $newModel = $wshandle->get_objects([{ workspace=>$userws, name=> $um }])->[0]{data};# ->{modelreactions};
+
+            my $uMgprRxnCount =0;
+            for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
+
+                my $gprCheck = $newModel->{modelreactions}->[$i];
+                my @rid = split /_/, $gprCheck->{id};
+                if (!@{$gprCheck->{modelReactionProteins} }){
+
+                        if (exists $uMMSrxns->{$um}->{ $gprCheck->{id} }){
+                            $uMcounterHashNOGPRMS->{$um}++;
+                            $uMNOGPRrxnsMS->{$gprCheck->{id}} = 1;
+                            #print "NO GPR $gprCheck->{id}\t $um \n";
+                        }
+                        elsif (exists $mMNonMSrxns->{ $um }->{ $gprCheck->{id}}){
+                            $uMcounterHashNOGPRNoMS->{$um}++;
+                            $uMNOGPRrxnsNoMS->{$gprCheck->{id}} = 1;
+                            #print "NO GPR $gprCheck->{id}\t $um \n";
+                        }
+                        else{
+                          next;
+                        }
+
+
+
+                }
+
+                else{
+
+                    my $gprFlag =0;
+                    for (my $j=0; $j< @{$gprCheck->{modelReactionProteins}}; $j++){
+
+                        my $subGPR = $gprCheck->{modelReactionProteins}->[$j];
+
+                        for (my $n=0; $n< @{$subGPR->{modelReactionProteinSubunits}}; $n++){
+                            my $eachGPR = $subGPR->{modelReactionProteinSubunits}->[$n];
+
+                            if (!@{$eachGPR->{feature_refs} }){
+                                next;
+
+                            }
+                            else{
+
+                                $gprFlag =1;
+                                last;
+                            }
+                        }
+                    }
+                    if ($gprFlag != 0){
+
+                           if (exists $uMMSrxns->{$um}->{ $gprCheck->{id} }){
+                                $uMcounterHashGPRMS->{$um}++;
+                                $uMGPRrxnsMS->{$gprCheck->{id}} = 1;
+                                $uMgprRxnCount++;
+                                #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                            }
+                            elsif (exists $mMNonMSrxns->{ $um }->{ $gprCheck->{id}}){
+                                $uMcounterHashGPRNoMS->{$um}++;
+                                $uMGPRrxnsNoMS->{$gprCheck->{id}} = 1;
+                                $uMgprRxnCount++
+                                #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                            }
+                            else{
+                              next;
+                            }
+
+                    }
+                    else{
+
+                            if (exists $uMMSrxns->{$um}->{ $gprCheck->{id} }){
+                                $uMcounterHashNOGPRMS->{$um}++;
+
+                                $uMNOGPRrxnsMS->{$gprCheck->{id}} = 1;
+                                #print "NO GPR $gprCheck->{id}\t $um \n";
+                            }
+                            elsif (exists $mMNonMSrxns->{ $um }->{ $gprCheck->{id}}){
+                                $uMcounterHashNOGPRNoMS->{$um}++;
+
+                                $uMNOGPRrxnsNoMS->{$gprCheck->{id}} = 1;
+                                #print "NO GPR $gprCheck->{id}\t $um \n";
+                            }
+                            else{
+                              next;
+                            }
+
+                    }
+                }#else
+            }#for
+
+        }
+
+
+ #print &Dumper ($uMcounterHashNOGPRMS, $uMcounterHashNOGPRNoMS);
+
+ print &Dumper ($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelMSGARCount, $uMcounterHashGPRMS, $uMcounterHashGPRNoMS, $uMcounterHashNOGPRNoMS );
+
+print "Model Name\tTotal Rxns\tTotal MS Rxns\tGARxnCount(templateModel)\tGARxnCount-MSEED (templateModel)\tGARxncount-MSEED\tGARxncount-NonMSEED\tRxns-NOGPR-NO_MSSEED\n";
+foreach my $k (sort keys $templateId){
+    my $um = $k."_DM";
+    my $tm = $k."_KBase";
+
+    print "$tm\t$eachModelRxns->{$tm}\t$eachModelMSRxns->{$tm}\t$eachModelGARxnsCount->{$tm}\t$eachModelMSGARCount->{$tm}\t$uMcounterHashGPRMS->{$tm}\t$uMcounterHashGPRNoMS->{$tm}\t$uMcounterHashNOGPRNoMS->{$tm}\n";
+    #print "$um\t$eachModelRxns->{$um}\t$eachModelMSRxns->{$um}\t$eachModelGARxnsCount->{$um}\t$eachModelMSGARCount->{$um}\t$uMcounterHashGPRMS->{$um}\t$uMcounterHashGPRNoMS->{$um}\t$uMcounterHashNOGPRNoMS->{$um}\n";
+
+}
+
+die;
+
+    #END build_model_stats
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to build_model_stats:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'build_model_stats');
     }
     return($output);
 }
@@ -1141,6 +1768,7 @@ workspace has a value which is a string
 genome_ref has a value which is a string
 template_model has a value which is a string
 gapfill_model has a value which is an int
+media_ref has a value which is a string
 translation_policy has a value which is a string
 output_model has a value which is a string
 
@@ -1155,6 +1783,7 @@ workspace has a value which is a string
 genome_ref has a value which is a string
 template_model has a value which is a string
 gapfill_model has a value which is an int
+media_ref has a value which is a string
 translation_policy has a value which is a string
 output_model has a value which is a string
 
