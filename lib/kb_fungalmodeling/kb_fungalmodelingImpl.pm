@@ -129,7 +129,7 @@ sub make_report_page
         var data = google.visualization.arrayToDataTable([$pieChartRxn]);
 
         var options = {
-          title: 'Published Model Intergreation Statistics',
+          title: 'Published Model Integration Statistics',
           is3D: true,
         };
 
@@ -144,7 +144,7 @@ sub make_report_page
         var data = google.visualization.arrayToDataTable([$barChartRxn]);
 
         var options = {
-        title: 'Reaction intergration statiscs',
+        title: 'Reaction integration statiscs',
         chartArea: {width: '50%'},
         colors: ['#62f442', '#41a0f4', '#ffab91'],
         hAxis: {
@@ -1433,11 +1433,14 @@ sub build_model_stats
 
                 for (my $i=0; $i< @{$eachTemplate->{modelreactions}}; $i++) {
                     my @rid = split /_/, $eachTemplate->{modelreactions}->[$i]->{id};
-                    $eachTemplateHashSplit->{ $templateId->{$k}->[0] }->{ $rid[0] }  = [$k, $templateId->{$k}->[0]];
 
-                    $eachTemplateHash->{ $templateId->{$k}->[0] }->{ $eachTemplate->{modelreactions}->[$i]->{id}}  = [$k, $templateId->{$k}->[0]];
                     my @msr1 = split /\//, $eachTemplate->{modelreactions}->[$i]->{reaction_ref};
                     my @msr = split /_/, $msr1[-1];
+
+                    $eachTemplateHashSplit->{ $templateId->{$k}->[0] }->{ $msr[0] }  = [$k, $templateId->{$k}->[0]];
+
+                    #$eachTemplateHash->{ $templateId->{$k}->[0] }->{ $eachTemplate->{modelreactions}->[$i]->{id}}  = [$k, $templateId->{$k}->[0]];
+                    $eachTemplateHash->{ $templateId->{$k}->[0] }->{$msr[0]  }  = [$k, $templateId->{$k}->[0]];
 
                     if ($msr[0] eq 'rxn00000'){
 
@@ -1445,33 +1448,33 @@ sub build_model_stats
 
                         if ($eachTemplate->{modelreactions}->[$i]->{imported_gpr}){
 
-                            $eachModelGARxns->{ $templateId->{$k}->[0] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                            $eachModelGARxns->{ $templateId->{$k}->[0] }->{$msr[0] } = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
                             $eachModelGARxnsCount->{$templateId->{$k}->[0]}++;
 
 
                         }
                         else{
-                            push (@{$eachModelNonGARxns->{$templateId->{$k}->[0]}}, $eachTemplate->{modelreactions}->[$i]->{id})
+                            push (@{$eachModelNonGARxns->{$templateId->{$k}->[0]}}, $msr[0] )
 
                         }
 
 
                     }
                     else {
-
+                        #print "$eachTemplate->{modelreactions}->[$i]->{id}\t**$msr[0]**\t**$msr1[-1]**\n";
                         $eachModelRxns->{$templateId->{$k}->[0]}++;
                         $eachModelMSRxns->{$templateId->{$k}->[0]}++;
 
                         if ($eachTemplate->{modelreactions}->[$i]->{imported_gpr}){
 
-                            $eachModelGARxns->{ $templateId->{$k}->[0] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                            $eachModelGARxns->{ $templateId->{$k}->[0] }->{$msr[0] } = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
                             $eachModelGARxnsCount->{$templateId->{$k}->[0]}++;
-                            $eachModelMSGARxns->{ $templateId->{$k}->[0] }->{$eachTemplate->{modelreactions}->[$i]->{id}} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
+                            $eachModelMSGARxns->{ $templateId->{$k}->[0] }->{$msr[0]} = [$eachTemplate->{modelreactions}->[$i]->{imported_gpr},$eachTemplate->{modelreactions}->[$i]->{name}];
                             $eachModelMSGARCount->{$templateId->{$k}->[0]}++;
 
                         }
                         else{
-                            push (@{$eachModelNonGARxns->{$templateId->{$k}->[0]}}, $eachTemplate->{modelreactions}->[$i]->{id});
+                            push (@{$eachModelNonGARxns->{$templateId->{$k}->[0]}}, $msr[0] );
 
                         }
 
@@ -1538,13 +1541,14 @@ sub build_model_stats
             my @msr = split /_/, $msr1[-1];
             if ($msr[0] eq 'rxn00000'){
               $eachModelRxns->{ $params->{output_model}}++;
-              $mMNonMSrxns->{$params->{output_model}}->{$newModel->{modelreactions}->[$i]->{id}} =1;
+              #$mMNonMSrxns->{$params->{output_model}}->{$newModel->{modelreactions}->[$i]->{id}} =1;
+              $mMNonMSrxns->{$params->{output_model}}->{$msr[0]} =1;
             }
             else {
 
               $eachModelRxns->{ $params->{output_model}}++;
               $eachModelMSRxns->{ $params->{output_model}}++;
-              $uMMSrxns->{$params->{output_model}}->{$newModel->{modelreactions}->[$i]->{id}} =1;
+              $uMMSrxns->{$params->{output_model}}->{$msr[0]} =1;
             }
 
         }
@@ -1591,19 +1595,21 @@ sub build_model_stats
 
             my $uMgprRxnCount =0;
             for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
+                my @msr1 = split /\//, $newModel->{modelreactions}->[$i]->{reaction_ref};
+                my @msr = split /_/, $msr1[-1];
 
                 my $gprCheck = $newModel->{modelreactions}->[$i];
                 my @rid = split /_/, $gprCheck->{id};
                 if (!@{$gprCheck->{modelReactionProteins} }){
 
-                        if (exists $uMMSrxns->{$um}->{ $gprCheck->{id} }){
+                        if (exists $uMMSrxns->{$um}->{ $msr[0] }){
                             $uMcounterHashNOGPRMS->{$um}++;
-                            $uMNOGPRrxnsMS->{$gprCheck->{id}} = 1;
+                            $uMNOGPRrxnsMS->{$msr[0]} = 1;
                             #print "NO GPR $gprCheck->{id}\t $um \n";
                         }
-                        elsif (exists $mMNonMSrxns->{ $um }->{ $gprCheck->{id}}){
+                        elsif (exists $mMNonMSrxns->{ $um }->{ $msr[0]}){
                             $uMcounterHashNOGPRNoMS->{$um}++;
-                            $uMNOGPRrxnsNoMS->{$gprCheck->{id}} = 1;
+                            $uMNOGPRrxnsNoMS->{$msr[0]} = 1;
                             #print "NO GPR $gprCheck->{id}\t $um \n";
                         }
                         else{
@@ -1637,15 +1643,15 @@ sub build_model_stats
                     }
                     if ($gprFlag != 0){
 
-                           if (exists $uMMSrxns->{$um}->{ $gprCheck->{id} }){
+                           if (exists $uMMSrxns->{$um}->{ $msr[0] }){
                                 $uMcounterHashGPRMS->{$um}++;
-                                $uMGPRrxnsMS->{$gprCheck->{id}} = 1;
+                                $uMGPRrxnsMS->{$um}->{$msr[0]} = 1;
                                 $uMgprRxnCount++;
-                                #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                                #print "GPR $msr[0]\t $um\t$templateId->{$k}->[1] \n";
                             }
-                            elsif (exists $mMNonMSrxns->{ $um }->{ $gprCheck->{id}}){
+                            elsif (exists $mMNonMSrxns->{ $um }->{ $msr[0]}){
                                 $uMcounterHashGPRNoMS->{$um}++;
-                                $uMGPRrxnsNoMS->{$gprCheck->{id}} = 1;
+                                $uMGPRrxnsNoMS->{$msr[0]} = 1;
                                 $uMgprRxnCount++
                                 #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                             }
@@ -1656,16 +1662,16 @@ sub build_model_stats
                     }
                     else{
 
-                            if (exists $uMMSrxns->{$um}->{ $gprCheck->{id} }){
+                            if (exists $uMMSrxns->{$um}->{ $msr[0] }){
                                 $uMcounterHashNOGPRMS->{$um}++;
 
-                                $uMNOGPRrxnsMS->{$gprCheck->{id}} = 1;
+                                $uMNOGPRrxnsMS->{$msr[0]} = 1;
                                 #print "NO GPR $gprCheck->{id}\t $um \n";
                             }
-                            elsif (exists $mMNonMSrxns->{ $um }->{ $gprCheck->{id}}){
+                            elsif (exists $mMNonMSrxns->{ $um }->{ $msr[0]}){
                                 $uMcounterHashNOGPRNoMS->{$um}++;
 
-                                $uMNOGPRrxnsNoMS->{$gprCheck->{id}} = 1;
+                                $uMNOGPRrxnsNoMS->{$msr[0]} = 1;
                                 #print "NO GPR $gprCheck->{id}\t $um \n";
                             }
                             else{
@@ -1681,17 +1687,51 @@ sub build_model_stats
 
  #print &Dumper ($uMcounterHashNOGPRMS, $uMcounterHashNOGPRNoMS);
 
- print &Dumper ($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelMSGARCount, $uMcounterHashGPRMS, $uMcounterHashGPRNoMS, $uMcounterHashNOGPRNoMS );
-
+ #print &Dumper ($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelMSGARCount, $uMcounterHashGPRMS, $uMcounterHashGPRNoMS, $uMcounterHashNOGPRNoMS );
+#header line
 print "Model Name\tTotal Rxns\tTotal MS Rxns\tGARxnCount(templateModel)\tGARxnCount-MSEED (templateModel)\tGARxncount-MSEED\tGARxncount-NonMSEED\tRxns-NOGPR-NO_MSSEED\n";
 foreach my $k (sort keys $templateId){
     my $um = $k."_DM";
     my $tm = $k."_KBase";
 
-    print "$tm\t$eachModelRxns->{$tm}\t$eachModelMSRxns->{$tm}\t$eachModelGARxnsCount->{$tm}\t$eachModelMSGARCount->{$tm}\t$uMcounterHashGPRMS->{$tm}\t$uMcounterHashGPRNoMS->{$tm}\t$uMcounterHashNOGPRNoMS->{$tm}\n";
-    #print "$um\t$eachModelRxns->{$um}\t$eachModelMSRxns->{$um}\t$eachModelGARxnsCount->{$um}\t$eachModelMSGARCount->{$um}\t$uMcounterHashGPRMS->{$um}\t$uMcounterHashGPRNoMS->{$um}\t$uMcounterHashNOGPRNoMS->{$um}\n";
+    #template model stats
+    #print "$tm\t$eachModelRxns->{$tm}\t$eachModelMSRxns->{$tm}\t$eachModelGARxnsCount->{$tm}\t$eachModelMSGARCount->{$tm}\t$uMcounterHashGPRMS->{$tm}\t$uMcounterHashGPRNoMS->{$tm}\t$uMcounterHashNOGPRNoMS->{$tm}\n";
+
+    #user model stats
+    print "$um\t$eachModelRxns->{$um}\t$eachModelMSRxns->{$um}\t$eachModelGARxnsCount->{$um}\t$eachModelMSGARCount->{$um}\t$uMcounterHashGPRMS->{$um}\t$uMcounterHashGPRNoMS->{$um}\t$uMcounterHashNOGPRNoMS->{$um}\n";
 
 }
+
+
+my $fractionUMGPRMSRxnsFromTemplate;
+
+
+
+foreach my $k (sort keys $eachModelMSGARxns){
+
+    #$uMGPRrxnsMS
+    my $um = $k;
+    $um  =~ s/_KBase/_DM/g;
+    foreach my $r (keys $eachModelMSGARxns->{$k}){
+
+        #print "$um\t$k\t$r\n";
+
+        if (exists $uMGPRrxnsMS->{$um}->{$r}){
+
+            $fractionUMGPRMSRxnsFromTemplate->{$um}++;
+
+            #print "$um\t$r\n";
+
+
+        }
+
+    }
+
+}
+
+#print &Dumper ($fractionUMGPRMSRxnsFromTemplate);
+
+
 
 die;
 
