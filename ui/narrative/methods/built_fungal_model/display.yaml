@@ -6,7 +6,7 @@ tooltip: |
     Build Fungal Model
 screenshots: []
 
-icon: null
+icon: fungalmodel-teal.png
 
 #
 # define a set of similar methods that might be useful to the user
