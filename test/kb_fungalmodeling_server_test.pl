@@ -35,7 +35,7 @@ sub get_ws_name {
 #my $ws = "janakakbase:narrative_1509376805185";
 #my $ws = "janakakbase:narrative_1498154949048";
 my $ws = 'janakakbase:narrative_1509987427391';
-my $input_genome = 'Aspergillus_terreus';
+my $input_genome = 'Psean1';
 my $protInput = {
         workspace => $ws,
         genome_ref => $input_genome,
@@ -45,7 +45,7 @@ my $protInput = {
         output_model =>  'prpogated_model_out_'.$input_genome
 };
 
-my $template_ws= 'janakakbase:narrative_1509987427391';
+my $template_ws= 'jplfaria:narrative_1510597445008'; #janakakbase:narrative_1509987427391';
 
 my $templateBuild = {
         workspace => $template_ws,
@@ -54,10 +54,27 @@ my $templateBuild = {
         output_model =>  'FungalTemplateModel'
 };
 
+
+my $modelStats= {
+        workspace => $template_ws,
+        reference_genome => 'Neurospora_crassa',
+        reference_model =>  'Neuropora_crassa_Model',
+        output_model =>  'FungalTemplateModel'
+};
+
+my $testGenomeUpload = {
+        workspace => 'Fungal_Genomes',
+        reference_genome => 'Neurospora_crassa',
+        output_model =>  'FungalTemplateModel'
+};
+
+
 eval {
     my $ret =$impl->build_fungal_model($protInput);
     #my $ret =$impl->build_fungal_template($templateBuild);
-    print &Dumper ($ret);
+    #my $ret =$impl->build_model_stats($modelStats);
+    #my $ret =$impl->update_model ($testGenomeUpload);
+    #print &Dumper ($ret);
 };
 
 

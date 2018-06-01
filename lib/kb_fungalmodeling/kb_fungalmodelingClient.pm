@@ -127,6 +127,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	genome_ref has a value which is a string
 	template_model has a value which is a string
 	gapfill_model has a value which is an int
+	media_ref has a value which is a string
 	translation_policy has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
@@ -146,6 +147,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	genome_ref has a value which is a string
 	template_model has a value which is a string
 	gapfill_model has a value which is an int
+	media_ref has a value which is a string
 	translation_policy has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
@@ -309,6 +311,206 @@ fungalReferenceModelBuildOutput is a reference to a hash where the following key
     }
 }
  
+
+
+=head2 build_model_stats
+
+  $output = $obj->build_model_stats($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a kb_fungalmodeling.fungalReferenceModelBuildInput
+$output is a kb_fungalmodeling.fungalReferenceModelBuildOutput
+fungalReferenceModelBuildInput is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	reference_genome has a value which is a string
+	reference_model has a value which is a string
+	genome_ws has a value which is a string
+	model_ws has a value which is a string
+fungalReferenceModelBuildOutput is a reference to a hash where the following keys are defined:
+	master_template_model_ref has a value which is a string
+	master_template_genome_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a kb_fungalmodeling.fungalReferenceModelBuildInput
+$output is a kb_fungalmodeling.fungalReferenceModelBuildOutput
+fungalReferenceModelBuildInput is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	reference_genome has a value which is a string
+	reference_model has a value which is a string
+	genome_ws has a value which is a string
+	model_ws has a value which is a string
+fungalReferenceModelBuildOutput is a reference to a hash where the following keys are defined:
+	master_template_model_ref has a value which is a string
+	master_template_genome_ref has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub build_model_stats
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function build_model_stats (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to build_model_stats:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'build_model_stats');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "kb_fungalmodeling.build_model_stats",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'build_model_stats',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method build_model_stats",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'build_model_stats',
+				       );
+    }
+}
+ 
+
+
+=head2 update_model
+
+  $output = $obj->update_model($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a kb_fungalmodeling.fungalReferenceModelBuildInput
+$output is a kb_fungalmodeling.fungalReferenceModelBuildOutput
+fungalReferenceModelBuildInput is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	reference_genome has a value which is a string
+	reference_model has a value which is a string
+	genome_ws has a value which is a string
+	model_ws has a value which is a string
+fungalReferenceModelBuildOutput is a reference to a hash where the following keys are defined:
+	master_template_model_ref has a value which is a string
+	master_template_genome_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a kb_fungalmodeling.fungalReferenceModelBuildInput
+$output is a kb_fungalmodeling.fungalReferenceModelBuildOutput
+fungalReferenceModelBuildInput is a reference to a hash where the following keys are defined:
+	workspace has a value which is a string
+	reference_genome has a value which is a string
+	reference_model has a value which is a string
+	genome_ws has a value which is a string
+	model_ws has a value which is a string
+fungalReferenceModelBuildOutput is a reference to a hash where the following keys are defined:
+	master_template_model_ref has a value which is a string
+	master_template_genome_ref has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub update_model
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function update_model (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to update_model:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'update_model');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "kb_fungalmodeling.update_model",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'update_model',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method update_model",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'update_model',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -352,16 +554,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'build_fungal_template',
+                method_name => 'update_model',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method build_fungal_template",
+            error => "Error invoking method update_model",
             status_line => $self->{client}->status_line,
-            method_name => 'build_fungal_template',
+            method_name => 'update_model',
         );
     }
 }
@@ -414,6 +616,7 @@ workspace has a value which is a string
 genome_ref has a value which is a string
 template_model has a value which is a string
 gapfill_model has a value which is an int
+media_ref has a value which is a string
 translation_policy has a value which is a string
 output_model has a value which is a string
 
@@ -428,6 +631,7 @@ workspace has a value which is a string
 genome_ref has a value which is a string
 template_model has a value which is a string
 gapfill_model has a value which is an int
+media_ref has a value which is a string
 translation_policy has a value which is a string
 output_model has a value which is a string
 

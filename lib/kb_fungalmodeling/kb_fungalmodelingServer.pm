@@ -30,12 +30,16 @@ our $CallContext;
 our %return_counts = (
         'build_fungal_model' => 1,
         'build_fungal_template' => 1,
+        'build_model_stats' => 1,
+        'update_model' => 1,
         'status' => 1,
 );
 
 our %method_authentication = (
         'build_fungal_model' => 'required',
         'build_fungal_template' => 'required',
+        'build_model_stats' => 'required',
+        'update_model' => 'required',
 );
 
 sub _build_valid_methods
@@ -44,6 +48,8 @@ sub _build_valid_methods
     my $methods = {
         'build_fungal_model' => 1,
         'build_fungal_template' => 1,
+        'build_model_stats' => 1,
+        'update_model' => 1,
         'status' => 1,
     };
     return $methods;

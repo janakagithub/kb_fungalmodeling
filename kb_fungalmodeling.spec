@@ -42,4 +42,10 @@ module kb_fungalmodeling {
 
     funcdef build_fungal_template(fungalReferenceModelBuildInput params)
         returns (fungalReferenceModelBuildOutput output) authentication required;
+
+    funcdef build_model_stats(fungalReferenceModelBuildInput params)
+        returns (fungalReferenceModelBuildOutput output) authentication required;
+
+    funcdef update_model (fungalReferenceModelBuildInput params)
+        returns (fungalReferenceModelBuildOutput output) authentication required;
 };

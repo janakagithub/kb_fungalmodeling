@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "genome_ref",
     "template_model",
     "gapfill_model",
+    "media_ref",
     "translation_policy",
     "output_model"
 })
@@ -36,6 +37,8 @@ public class FungalmodelbuiltInput {
     private String templateModel;
     @JsonProperty("gapfill_model")
     private Long gapfillModel;
+    @JsonProperty("media_ref")
+    private String mediaRef;
     @JsonProperty("translation_policy")
     private String translationPolicy;
     @JsonProperty("output_model")
@@ -102,6 +105,21 @@ public class FungalmodelbuiltInput {
         return this;
     }
 
+    @JsonProperty("media_ref")
+    public String getMediaRef() {
+        return mediaRef;
+    }
+
+    @JsonProperty("media_ref")
+    public void setMediaRef(String mediaRef) {
+        this.mediaRef = mediaRef;
+    }
+
+    public FungalmodelbuiltInput withMediaRef(String mediaRef) {
+        this.mediaRef = mediaRef;
+        return this;
+    }
+
     @JsonProperty("translation_policy")
     public String getTranslationPolicy() {
         return translationPolicy;
@@ -144,7 +162,7 @@ public class FungalmodelbuiltInput {
 
     @Override
     public String toString() {
-        return ((((((((((((((("FungalmodelbuiltInput"+" [workspace=")+ workspace)+", genomeRef=")+ genomeRef)+", templateModel=")+ templateModel)+", gapfillModel=")+ gapfillModel)+", translationPolicy=")+ translationPolicy)+", outputModel=")+ outputModel)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("FungalmodelbuiltInput"+" [workspace=")+ workspace)+", genomeRef=")+ genomeRef)+", templateModel=")+ templateModel)+", gapfillModel=")+ gapfillModel)+", mediaRef=")+ mediaRef)+", translationPolicy=")+ translationPolicy)+", outputModel=")+ outputModel)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
