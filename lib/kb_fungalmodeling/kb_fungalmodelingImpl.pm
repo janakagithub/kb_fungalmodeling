@@ -544,7 +544,7 @@ foreach my $k (keys $templateId){
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
-            proteincomparison_id => 'proteinCompPsean1', #$protCompId, #'proteinCompPsean1'
+            proteincomparison_id => $protCompId, #'proteinCompPsean1'
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $params->{output_model},
             workspace => $params->{workspace},
@@ -561,7 +561,7 @@ foreach my $k (keys $templateId){
      my $userModelRxns;
      my $newModel;
      #temperoraly fetching the object - remove after debugging
-     $params->{output_model} = 'prpogated_model_out_Psean1';
+     #$params->{output_model} = 'prpogated_model_out_Psean1';
     eval {
         $newModel = $wshandle->get_objects([{workspace=>$params->{workspace}, name=>$params->{output_model}}])->[0]{data};# ->{modelreactions};
 
