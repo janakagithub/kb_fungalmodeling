@@ -672,7 +672,7 @@ foreach my $k (keys $templateId){
 
     my $gpModelFromSource;
 
-
+=cut
 
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
@@ -688,7 +688,7 @@ foreach my $k (keys $templateId){
             translation_policy => $tran_policy
             #output_id =>  $dr_model
         });
-=cut
+
 
 
 
