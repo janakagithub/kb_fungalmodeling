@@ -61,9 +61,15 @@
                       "ui_name": "Neurospora crassa iJDZ836"
                     },
                     {
-                      "value": "Yeast",
+                      "value": "iLC915",
+                      "display": "Komagataella phaffii GS115",
+                      "id": " iLC915",
+                      "ui_name": "Komagataella phaffii GS115"
+                    },
+                    {
+                      "value": "iMM904",
                       "display": "Saccharomyces cerevisiae yeast7.6",
-                      "id": "Yeast",
+                      "id": "iMM904",
                       "ui_name": "Saccharomyces cerevisiae yeast7.6"
                     }
 

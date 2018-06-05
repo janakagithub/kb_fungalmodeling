@@ -217,6 +217,172 @@ sub make_report_page
    return $htmlLinkHash1;
 }
 
+
+sub user_model_stat_genereate {
+
+     my($dr_model,$eachTemplateHash,$eachTemplateHashSplit, $eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelCpds, $templateId, $eachModelMSCpds,$newModel) = @_;
+     my $userModelRxns;
+
+    eval {
+
+        #$newModel = $wshandle->get_objects([{workspace=>$ws, name=>$dr_model}])->[0]{data};# ->{modelreactions};
+
+        for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
+            $userModelRxns->{$newModel->{modelreactions}->[$i]->{id}} =1;
+            #push (@newModelArr,$newModel->{modelreactions}->[$i]->{id} );
+
+            my @msr1 = split /\//, $newModel->{modelreactions}->[$i]->{reaction_ref};
+            my @msr = split /_/, $msr1[-1];
+            if ($msr[0] eq 'rxn00000'){
+              $eachModelRxns->{ $dr_model}++;
+            }
+            else {
+
+              $eachModelRxns->{ $dr_model}++;
+              $eachModelMSRxns->{ $dr_model}++;
+            }
+
+        }
+
+        for (my $i=0; $i< @{$newModel->{modelcompounds}}; $i++){
+            my @msc1 = split /\//, $newModel->{modelcompounds}->[$i]->{compound_ref};
+            my @msc = split /_/, $msc1[-1];
+            if ($msc[0] eq 'cpd00000'){
+                $eachModelCpds->{ $dr_model}++;
+              }
+            else {
+                $eachModelCpds->{ $dr_model}++;
+                $eachModelMSCpds->{ $dr_model}++;
+              }
+
+        }
+
+    };
+    if ($@) {
+           die "Error loading object from the workspace:\n".$@;
+    }
+
+    #########################\
+    my $uMcounterHashGPR;
+    my $uMcounterHashNOGPR;
+    my $uMGPRrxns;
+    my $uMNOGPRrxns;
+    my $uMgprRxnCount =0;
+    for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
+
+        my $gprCheck = $newModel->{modelreactions}->[$i];
+        my @rid = split /_/, $gprCheck->{id};
+        if (!@{$gprCheck->{modelReactionProteins} }){
+
+            foreach my $k (keys $templateId){
+                if ($k eq 'default_temp'){
+                    next;
+                }
+                elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
+                    $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                    $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                    #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                }
+                elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
+                    $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                    $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                    #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                }
+                else{
+                  next;
+                }
+
+            }
+
+        }
+
+        else{
+
+            my $gprFlag =0;
+            my $eachGprArr = [];
+            for (my $j=0; $j< @{$gprCheck->{modelReactionProteins}}; $j++){
+
+                my $subGPR = $gprCheck->{modelReactionProteins}->[$j];
+
+                for (my $n=0; $n< @{$subGPR->{modelReactionProteinSubunits}}; $n++){
+                    my $eachGPR = $subGPR->{modelReactionProteinSubunits}->[$n];
+
+                    if (!@{$eachGPR->{feature_refs} }){
+                        next;
+
+                    }
+                    else{
+
+                        $gprFlag =1;
+                        $eachGprArr = $eachGPR->{feature_refs};
+                        last;
+                    }
+                }
+            }
+            if ($gprFlag != 0){
+                foreach my $k (keys $templateId){
+                    if ($k eq 'default_temp'){
+                    next;
+                    }
+                    elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
+                        $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
+                        $uMGPRrxns->{$gprCheck->{id}} = $eachGprArr;
+                        $uMgprRxnCount++;
+                        #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
+                        $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
+                        $uMGPRrxns->{$gprCheck->{id}} = $eachGprArr;
+                        $uMgprRxnCount++
+                        #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    else{
+                      next;
+                    }
+                }
+            }
+            else{
+                foreach my $k (keys $templateId){
+                    if ($k eq 'default_temp'){
+                    next;
+                    }
+                    elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
+                        $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                        $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                        #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
+                        $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                        $uMNOGPRrxns->{$gprCheck->{id}} = 1;
+                        #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
+                    }
+                    else{
+                      next;
+                    }
+                }
+            }
+        }
+
+    }
+
+    my $retun_user_stats = {
+
+        uMcounterHashGPR => $uMcounterHashGPR,
+        eachModelRxns => $eachModelRxns,
+        eachModelMSRxns => $eachModelMSRxns,
+        eachModelGARxnsCount => $eachModelGARxnsCount,
+        eachModelCpds => $eachModelCpds,
+        eachModelMSCpds  =>  $eachModelMSCpds
+
+    };
+
+    return $retun_user_stats;
+
+}
+
+
+
+
 #END_HEADER
 
 sub new
@@ -467,7 +633,6 @@ foreach my $k (keys $templateId){
             die "Error loading object from the workspace:\n".$@;
         }
     }
-
 }
   #print &Dumper ($eachModelRxns);
   #print &Dumper ($eachModelMSRxns);
@@ -489,7 +654,9 @@ foreach my $k (keys $templateId){
 
     }
 
-#=head # commenting the protein comparison
+
+    my $dr_model =$params->{genome_ref}."_draftModel";
+=head # commenting the protein comparison
     print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $params->{workspace},
@@ -500,16 +667,16 @@ foreach my $k (keys $templateId){
         output_id => $protCompId
     });
     print "Producing a draft model based on $protCompId proteome comparison\n";
-#=cut
+
 
     my $gpModelFromSource;
-    if ($params->{gapfill_model} == 1){
 
-        my $dr_model =$params->{genome_ref}."_draftModel";
+
+
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
-            proteincomparison_id => $protCompId, #'proteinCompPsean1',
+            proteincomparison_id => 'proteinCompHypCI4A_1', #$protCompId,
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
@@ -520,50 +687,17 @@ foreach my $k (keys $templateId){
             translation_policy => $tran_policy
             #output_id =>  $dr_model
         });
+=cut
 
-        print "Running gapfill from the source model, may take a while....\n ";
 
-        $gpModelFromSource = $fbaO->gapfill_metabolic_model ({
-
-            fbamodel_id => $dr_model,
-            fbamodel_output_id => $params->{output_model},
-            #source_fbamodel_id => 'Fungi', #$tmpModel,
-            #source_fbamodel_workspace => 'NewKBaseModelTemplates', #$template_ws,
-            workspace => $params->{workspace},
-            target_reaction => 'bio1',
-            feature_ko_list => [],
-            reaction_ko_list => [],
-            custom_bound_list => [],
-            media_supplement_list =>  [],
-            minimum_target_flux => 0.1
-        });
-    }
-    else {
-
-#=head
-        my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
-            fbamodel_id => $tmpModel,
-            fbamodel_workspace => $template_ws,
-            proteincomparison_id => $protCompId, #'proteinCompPsean1'
-            proteincomparison_workspace => $params->{workspace},
-            fbamodel_output_id =>  $params->{output_model},
-            workspace => $params->{workspace},
-            keep_nogene_rxn => 0,
-            #media_id =>
-            #media_workspace =>
-            minimum_target_flux => 0.1,
-            translation_policy => $tran_policy
-
-        });
-#=cut
-    }
 
      my $userModelRxns;
      my $newModel;
      #temperoraly fetching the object - remove after debugging
-     #$params->{output_model} = 'prpogated_model_out_Psean1';
+     $dr_model = 'HypCI4A_1_draftModel', #$dr_model;
     eval {
-        $newModel = $wshandle->get_objects([{workspace=>$params->{workspace}, name=>$params->{output_model}}])->[0]{data};# ->{modelreactions};
+
+        $newModel = $wshandle->get_objects([{workspace=>$params->{workspace}, name=>$dr_model}])->[0]{data};# ->{modelreactions};
 
         for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
             $userModelRxns->{$newModel->{modelreactions}->[$i]->{id}} =1;
@@ -572,12 +706,12 @@ foreach my $k (keys $templateId){
             my @msr1 = split /\//, $newModel->{modelreactions}->[$i]->{reaction_ref};
             my @msr = split /_/, $msr1[-1];
             if ($msr[0] eq 'rxn00000'){
-              $eachModelRxns->{ $params->{output_model}}++;
+              #$eachModelRxns->{ $dr_model}++;
             }
             else {
 
-              $eachModelRxns->{ $params->{output_model}}++;
-              $eachModelMSRxns->{ $params->{output_model}}++;
+              #$eachModelRxns->{ $dr_model}++;
+              #$eachModelMSRxns->{ $dr_model}++;
             }
 
         }
@@ -586,11 +720,11 @@ foreach my $k (keys $templateId){
             my @msc1 = split /\//, $newModel->{modelcompounds}->[$i]->{compound_ref};
             my @msc = split /_/, $msc1[-1];
             if ($msc[0] eq 'cpd00000'){
-                $eachModelCpds->{ $params->{output_model}}++;
+                #$eachModelCpds->{ $dr_model}++;
               }
             else {
-                $eachModelCpds->{ $params->{output_model}}++;
-                $eachModelMSCpds->{ $params->{output_model}}++;
+                #$eachModelCpds->{ $dr_model}++;
+                #$eachModelMSCpds->{ $dr_model}++;
               }
 
         }
@@ -617,12 +751,12 @@ foreach my $k (keys $templateId){
                     next;
                 }
                 elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
-                    $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                    #$uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
                     $uMNOGPRrxns->{$gprCheck->{id}} = 1;
                     #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                 }
                 elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
-                    $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                    #$uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
                     $uMNOGPRrxns->{$gprCheck->{id}} = 1;
                     #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                 }
@@ -663,13 +797,13 @@ foreach my $k (keys $templateId){
                     next;
                     }
                     elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
-                        $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
+                        #$uMcounterHashGPR->{$templateId->{$k}->[1]}++;
                         $uMGPRrxns->{$gprCheck->{id}} = $eachGprArr;
                         $uMgprRxnCount++;
                         #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                     }
                     elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
-                        $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
+                        #$uMcounterHashGPR->{$templateId->{$k}->[1]}++;
                         $uMGPRrxns->{$gprCheck->{id}} = $eachGprArr;
                         $uMgprRxnCount++
                         #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
@@ -685,12 +819,12 @@ foreach my $k (keys $templateId){
                     next;
                     }
                     elsif (exists $eachTemplateHash->{ $templateId->{$k}->[1] }->{ $gprCheck->{id} }){
-                        $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                        #$uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
                         $uMNOGPRrxns->{$gprCheck->{id}} = 1;
                         #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                     }
                     elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
-                        $uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
+                        #$uMcounterHashNOGPR->{$templateId->{$k}->[1]}++;
                         $uMNOGPRrxns->{$gprCheck->{id}} = 1;
                         #print "NO GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                     }
@@ -825,7 +959,7 @@ foreach my $k (keys $templateId){
 
     print &Dumper ($addReactionArr);
 
-
+=head
     ## Generating Biomass
     my $tempbiomassArr;
     my $biomass_cpd_remove = {
@@ -861,26 +995,89 @@ foreach my $k (keys $templateId){
             }
         }
     }
-
+=cut
     print &Dumper ($removeRxnsArr);
 
-    my $edited_model = $fbaO->edit_metabolic_model({
 
-        fbamodel_id => $params->{workspace}.'/'.$params->{output_model},
-        fbamodel_output_id => $params->{output_model},
-        workspace =>  $params->{workspace},
-        compounds_to_add => [],
-        compounds_to_change => [],
-        biomasses_to_add => [],
-        biomass_compounds_to_change => [],
-        reactions_to_remove => join (',',@{$removeRxnsArr}),
-        reactions_to_change => [],
-        reactions_to_add => $addReactionArr,
-        edit_compound_stoichiometry => []
+    if ($params->{template_model} eq 'default_temp'){
+        my $edited_model = $fbaO->edit_metabolic_model({
+
+            fbamodel_id => $params->{workspace}.'/'.$dr_model,
+            fbamodel_output_id => $params->{output_model},
+            workspace =>  $params->{workspace},
+            compounds_to_add => [],
+            compounds_to_change => [],
+            biomasses_to_add => [],
+            biomass_compounds_to_change => [],
+            reactions_to_remove => join (',',@{$removeRxnsArr}),
+            reactions_to_change => [],
+            reactions_to_add => $addReactionArr,
+            edit_compound_stoichiometry => []
 
 
-    });
+        });
+    }
+    else{
+        $params->{output_model} = $dr_model;
+    }
 
+
+    if ($params->{gapfill_model} == 1 && $params->{template_model} eq 'default_temp'){
+        print "Running gapfill from based on the master fungal template, may take a while....\n ";
+        my $gpModelFromSource = $fbaO->gapfill_metabolic_model ({
+
+            fbamodel_id => $params->{output_model},
+            fbamodel_output_id => $params->{output_model},
+            #source_fbamodel_id => 'Fungi', #$tmpModel,
+            #source_fbamodel_workspace => 'NewKBaseModelTemplates', #$template_ws,
+            workspace => $params->{workspace},
+            target_reaction => 'bio1',
+            feature_ko_list => [],
+            reaction_ko_list => [],
+            custom_bound_list => [],
+            media_supplement_list =>  [],
+            minimum_target_flux => 0.1
+        });
+
+    }
+    elsif ($params->{gapfill_model} == 1 && $params->{template_model} ne 'default_temp'){
+        print "Running gapfill from the source model, may take a while....\n ";
+        my $gpModelFromSource = $fbaO->gapfill_metabolic_model ({
+
+            fbamodel_id => $params->{output_model},
+            fbamodel_output_id => $params->{output_model},
+            source_fbamodel_id => $tmpModel,
+            source_fbamodel_workspace => $template_ws,
+            workspace => $params->{workspace},
+            target_reaction => 'bio1',
+            feature_ko_list => [],
+            reaction_ko_list => [],
+            custom_bound_list => [],
+            media_supplement_list =>  [],
+            minimum_target_flux => 0.1
+        });
+
+    }
+    else{
+
+        print "No template selected: template param - **$params->{template_model}**\n";
+    }
+
+
+    #my($dr_model,$eachTemplateHash,$eachTemplateHashSplit, $eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelCpds, $templateId, $eachModelMSCpds, $newModel) = @_;
+    my $userModel;
+    eval {
+
+        $userModel = $wshandle->get_objects([{workspace=>$params->{workspace}, name=>$params->{output_model}}])->[0]{data};
+    };
+    if ($@) {
+           die "Error loading object from the workspace:\n".$@;
+    }
+
+    my $userModelStats =  user_model_stat_genereate($params->{output_model},$eachTemplateHash,$eachTemplateHashSplit,$eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelCpds, $templateId, $eachModelMSCpds,$userModel);
+
+     print &Dumper ($userModelStats);
+     print &Dumper ($eachModelGARxnsCount);
 
     my $pieChartRxn = generate_pie_chart ($uMcounterHashGPR, $templateId);
     my $barChartRxn = generate_rxn_barchart($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount,$templateId,$params->{output_model},$uMgprRxnCount );
