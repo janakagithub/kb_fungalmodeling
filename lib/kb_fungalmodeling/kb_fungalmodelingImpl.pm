@@ -372,7 +372,8 @@ sub user_model_stat_genereate {
         eachModelMSRxns => $eachModelMSRxns,
         eachModelGARxnsCount => $eachModelGARxnsCount,
         eachModelCpds => $eachModelCpds,
-        eachModelMSCpds  =>  $eachModelMSCpds
+        eachModelMSCpds  =>  $eachModelMSCpds,
+        uMgprRxnCount => $uMgprRxnCount
 
     };
 
@@ -1077,11 +1078,14 @@ foreach my $k (keys $templateId){
     my $userModelStats =  user_model_stat_genereate($params->{output_model},$eachTemplateHash,$eachTemplateHashSplit,$eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelCpds, $templateId, $eachModelMSCpds,$userModel);
 
      print &Dumper ($userModelStats);
-     print &Dumper ($eachModelGARxnsCount);
+     print &Dumper ($userModelStats->{eachModelGARxnsCount});
 
-    my $pieChartRxn = generate_pie_chart ($uMcounterHashGPR, $templateId);
-    my $barChartRxn = generate_rxn_barchart($eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount,$templateId,$params->{output_model},$uMgprRxnCount );
-    my $barChartCpds = generate_cpd_barchart($eachModelCpds, $eachModelMSCpds,$templateId,$params->{output_model});
+     print &Dumper ($userModelStats->{uMcounterHashGPR});
+     print &Dumper ($templateId);
+
+    my $pieChartRxn = generate_pie_chart ($userModelStats->{uMcounterHashGPR}, $templateId);
+    my $barChartRxn = generate_rxn_barchart($userModelStats->{eachModelRxns}, $userModelStats->{eachModelMSRxns}, $userModelStats->{eachModelGARxnsCount},$templateId,$params->{output_model},$userModelStats->{uMgprRxnCount} );
+    my $barChartCpds = generate_cpd_barchart($userModelStats->{eachModelCpds}, $userModelStats->{eachModelMSCpds},$templateId,$params->{output_model});
     my $htmlLink1 = make_report_page ($pieChartRxn,$barChartRxn,$barChartCpds);
     #print $pieChartRxn ."\n".$barChartRxn. "\n". $barChartCpds ."\n";
 
