@@ -67,6 +67,12 @@
                       "ui_name": "Komagataella phaffii iLC915"
                     },
                     {
+                      "value": "iOD907",
+                      "display": "Kluyveromyces lactis NRRL iOD907",
+                      "id": " iOD907",
+                      "ui_name": "Kluyveromyces lactis NRRL iOD907"
+                    },
+                    {
                       "value": "iRL766",
                       "display": "Eremothecium gossypii iRL766",
                       "id": "iRL766",
@@ -104,9 +110,9 @@
                     },
                     {
                       "value": "iMM904",
-                      "display": "Saccharomyces cerevisiae yeast7.6",
+                      "display": "Saccharomyces cerevisiae iMM904",
                       "id": "iMM904",
-                      "ui_name": "Saccharomyces cerevisiae yeast7.6"
+                      "ui_name": "Saccharomyces cerevisiae iMM904"
                     }
 
                 ]

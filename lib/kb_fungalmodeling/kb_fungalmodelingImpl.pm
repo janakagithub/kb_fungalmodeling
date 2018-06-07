@@ -685,7 +685,7 @@ foreach my $k (keys $templateId){
     my $gpModelFromSource;
 
 
-
+    if ($params->{gapfill_model} == 1){
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
@@ -699,7 +699,43 @@ foreach my $k (keys $templateId){
             minimum_target_flux => 0.1,
             translation_policy => $tran_policy
         });
+    }
+    elsif ($params->{gapfill_model} == 0 && $params->{template_model} ne 'default_temp'){
 
+         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
+            fbamodel_id => $tmpModel,
+            fbamodel_workspace => $template_ws,
+            proteincomparison_id =>  $protCompId, #'proteinCompAspergillus_oryzae',
+            proteincomparison_workspace => $params->{workspace},
+            fbamodel_output_id =>  $params->{output_model},
+            workspace => $params->{workspace},
+            keep_nogene_rxn => 0,
+            #media_id =>
+            #media_workspace =>
+            minimum_target_flux => 0.1,
+            translation_policy => $tran_policy
+        });
+    }
+    elsif ($params->{gapfill_model} == 0 && $params->{template_model} eq 'default_temp'){
+
+         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
+            fbamodel_id => $tmpModel,
+            fbamodel_workspace => $template_ws,
+            proteincomparison_id =>  $protCompId, #'proteinCompAspergillus_oryzae',
+            proteincomparison_workspace => $params->{workspace},
+            fbamodel_output_id =>  $dr_model,
+            workspace => $params->{workspace},
+            keep_nogene_rxn => 0,
+            #media_id =>
+            #media_workspace =>
+            minimum_target_flux => 0.1,
+            translation_policy => $tran_policy
+        });
+    }
+    else{
+
+          print "unknown template and gapfill combination: $params->{template_model}\t$params->{gapfill_model}\n";
+    }
 #=cut
 
 
@@ -1030,9 +1066,7 @@ foreach my $k (keys $templateId){
 
         });
     }
-    else{
-        $params->{output_model} = $dr_model;
-    }
+
 
 
     if ($params->{gapfill_model} == 1 && $params->{template_model} eq 'default_temp'){
@@ -1055,7 +1089,7 @@ foreach my $k (keys $templateId){
         print "Running gapfill from the source model, may take a while....\n ";
         my $gpModelFromSource = $fbaO->gapfill_metabolic_model ({
 
-            fbamodel_id => $params->{output_model},
+            fbamodel_id => $dr_model,
             fbamodel_output_id => $params->{output_model},
             source_fbamodel_id => $tmpModel,
             source_fbamodel_workspace => $template_ws,
