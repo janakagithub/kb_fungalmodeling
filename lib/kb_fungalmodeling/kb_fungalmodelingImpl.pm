@@ -222,6 +222,9 @@ sub user_model_stat_genereate {
 
      my($dr_model,$eachTemplateHash,$eachTemplateHashSplit, $eachModelRxns, $eachModelMSRxns, $eachModelGARxnsCount, $eachModelCpds, $templateId, $eachModelMSCpds,$newModel) = @_;
      my $userModelRxns;
+     my $eachModelCpdsUnique;
+     my $eachModelMSCpdsUnique;
+
 
     eval {
 
@@ -249,6 +252,7 @@ sub user_model_stat_genereate {
             my @msc = split /_/, $msc1[-1];
             if ($msc[0] eq 'cpd00000'){
                 $eachModelCpds->{ $dr_model}++;
+
               }
             else {
                 $eachModelCpds->{ $dr_model}++;
@@ -268,6 +272,7 @@ sub user_model_stat_genereate {
     my $uMGPRrxns;
     my $uMNOGPRrxns;
     my $uMgprRxnCount =0;
+    my $uMGPRcount;
     for (my $i=0; $i< @{$newModel->{modelreactions}}; $i++){
 
         my $gprCheck = $newModel->{modelreactions}->[$i];
@@ -319,6 +324,7 @@ sub user_model_stat_genereate {
                     }
                 }
             }
+
             if ($gprFlag != 0){
                 foreach my $k (keys $templateId){
                     if ($k eq 'default_temp'){
@@ -328,12 +334,14 @@ sub user_model_stat_genereate {
                         $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
                         $uMGPRrxns->{$gprCheck->{id}} = $eachGprArr;
                         $uMgprRxnCount++;
+                        $uMGPRcount->{$gprCheck->{id}} =1;
                         #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                     }
                     elsif (exists $eachTemplateHashSplit->{ $templateId->{$k}->[1] }->{ $rid[0] }){
                         $uMcounterHashGPR->{$templateId->{$k}->[1]}++;
                         $uMGPRrxns->{$gprCheck->{id}} = $eachGprArr;
-                        $uMgprRxnCount++
+                        $uMgprRxnCount++;
+                        $uMGPRcount->{$gprCheck->{id}} =1;
                         #print "GPR $gprCheck->{id}\t $templateId->{$k}->[1] \n";
                     }
                     else{
@@ -365,7 +373,10 @@ sub user_model_stat_genereate {
 
     }
 
-    my $retun_user_stats = {
+
+    my $uModelGprRxnCount = keys $uMGPRcount;
+
+    my $return_user_stats = {
 
         uMcounterHashGPR => $uMcounterHashGPR,
         eachModelRxns => $eachModelRxns,
@@ -373,11 +384,12 @@ sub user_model_stat_genereate {
         eachModelGARxnsCount => $eachModelGARxnsCount,
         eachModelCpds => $eachModelCpds,
         eachModelMSCpds  =>  $eachModelMSCpds,
-        uMgprRxnCount => $uMgprRxnCount
+        uModelGprRxnCount => $uModelGprRxnCount
 
     };
 
-    return $retun_user_stats;
+
+    return $return_user_stats;
 
 }
 
@@ -657,7 +669,7 @@ foreach my $k (keys $templateId){
 
 
     my $dr_model =$params->{genome_ref}."_draftModel";
-=head # commenting the protein comparison
+#=head # commenting the protein comparison
     print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $params->{workspace},
@@ -672,12 +684,12 @@ foreach my $k (keys $templateId){
 
     my $gpModelFromSource;
 
-=cut
+
 
         my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
-            proteincomparison_id => 'proteinCompHypCI4A_1', #$protCompId,
+            proteincomparison_id =>  $protCompId, #'proteinCompAspergillus_oryzae',
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
@@ -686,16 +698,14 @@ foreach my $k (keys $templateId){
             #media_workspace =>
             minimum_target_flux => 0.1,
             translation_policy => $tran_policy
-            #output_id =>  $dr_model
         });
 
-
+#=cut
 
 
      my $userModelRxns;
      my $newModel;
-     #temperoraly fetching the object - remove after debugging
-     $dr_model = 'HypCI4A_1_draftModel', #$dr_model;
+
     eval {
 
         $newModel = $wshandle->get_objects([{workspace=>$params->{workspace}, name=>$dr_model}])->[0]{data};# ->{modelreactions};
@@ -862,6 +872,9 @@ foreach my $k (keys $templateId){
             }
         }
     }
+     print &Dumper ($removeRxnsArr);
+
+
     foreach my $k (@{$eachModelNonGARxns->{$sortedUmCounterHash[-1] } }){
         #print "$k\t". scalar(@{$eachModelNonGARxns->{$sortedUmCounterHash[-1] } })."\n";
     }
@@ -924,7 +937,7 @@ foreach my $k (keys $templateId){
 
     }
 
-    print &Dumper ($uMGPRrxns);
+    #print &Dumper ($uMGPRrxns);
 
 
     #Adding the Z compartment reactions as cytosol reactions
@@ -960,7 +973,7 @@ foreach my $k (keys $templateId){
 
     print &Dumper ($addReactionArr);
 
-=head
+=head #Modifying biomass
     ## Generating Biomass
     my $tempbiomassArr;
     my $biomass_cpd_remove = {
@@ -997,7 +1010,6 @@ foreach my $k (keys $templateId){
         }
     }
 =cut
-    print &Dumper ($removeRxnsArr);
 
 
     if ($params->{template_model} eq 'default_temp'){
@@ -1029,8 +1041,6 @@ foreach my $k (keys $templateId){
 
             fbamodel_id => $params->{output_model},
             fbamodel_output_id => $params->{output_model},
-            #source_fbamodel_id => 'Fungi', #$tmpModel,
-            #source_fbamodel_workspace => 'NewKBaseModelTemplates', #$template_ws,
             workspace => $params->{workspace},
             target_reaction => 'bio1',
             feature_ko_list => [],
@@ -1084,7 +1094,7 @@ foreach my $k (keys $templateId){
      print &Dumper ($templateId);
 
     my $pieChartRxn = generate_pie_chart ($userModelStats->{uMcounterHashGPR}, $templateId);
-    my $barChartRxn = generate_rxn_barchart($userModelStats->{eachModelRxns}, $userModelStats->{eachModelMSRxns}, $userModelStats->{eachModelGARxnsCount},$templateId,$params->{output_model},$userModelStats->{uMgprRxnCount} );
+    my $barChartRxn = generate_rxn_barchart($userModelStats->{eachModelRxns}, $userModelStats->{eachModelMSRxns}, $userModelStats->{eachModelGARxnsCount},$templateId,$params->{output_model},$userModelStats->{uModelGprRxnCount} );
     my $barChartCpds = generate_cpd_barchart($userModelStats->{eachModelCpds}, $userModelStats->{eachModelMSCpds},$templateId,$params->{output_model});
     my $htmlLink1 = make_report_page ($pieChartRxn,$barChartRxn,$barChartCpds);
     #print $pieChartRxn ."\n".$barChartRxn. "\n". $barChartCpds ."\n";

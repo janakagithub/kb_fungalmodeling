@@ -31,6 +31,12 @@
             "dropdown_options": {
                 "options": [
                     {
+                      "value": "default_temp",
+                      "display": "Default Template",
+                      "id": "default_temp",
+                      "ui_name": "Default Template"
+                    },
+                    {
                       "value": "iJL1454",
                       "display": "Aspergillus terreus iJL1454",
                       "id": "iJL1454",
@@ -41,12 +47,6 @@
                       "display": "Candida glabrata iNX804",
                       "id": "iNX804",
                       "ui_name": "Candida glabrata iNX804"
-                    },
-                    {
-                      "value": "default_temp",
-                      "display": "Default Template",
-                      "id": "default_temp",
-                      "ui_name": "Default Template"
                     },
                     {
                       "value": "iCT646",
@@ -62,9 +62,45 @@
                     },
                     {
                       "value": "iLC915",
-                      "display": "Komagataella phaffii GS115",
+                      "display": "Komagataella phaffii iLC915",
                       "id": " iLC915",
-                      "ui_name": "Komagataella phaffii GS115"
+                      "ui_name": "Komagataella phaffii iLC915"
+                    },
+                    {
+                      "value": "iRL766",
+                      "display": "Eremothecium gossypii iRL766",
+                      "id": "iRL766",
+                      "ui_name": "Eremothecium gossypii iRL766"
+                    },
+                    {
+                      "value": "iAL1006",
+                      "display": "Penicillium rubens Wisconsin iAL1006",
+                      "id":  "iAL1006",
+                      "ui_name": "Penicillium rubens Wisconsin iAL1006"
+                    },
+                    {
+                      "value": "iSS884",
+                      "display": "Scheffersomyces stipitis CBS iSS884",
+                      "id":  "iSS884",
+                      "ui_name": "Scheffersomyces stipitis CBS iSS884"
+                    },
+                    {
+                      "value": "iNL895",
+                      "display": "Yarrowia lipolytica CLIB122 iNL895",
+                      "id":  "iNL895",
+                      "ui_name": "Yarrowia lipolytica CLIB122 iNL895"
+                    },
+                    {
+                      "value": "iWV1213",
+                      "display": "Mucor circinelloides CBS277 iWV1213",
+                      "id":  "iWV1213",
+                      "ui_name": "Mucor circinelloides CBS277 iWV1213"
+                    },
+                    {
+                      "value": "iWV1314",
+                      "display": "Aspergillus oryzae RIB40 iWV1314",
+                      "id":  "iWV1314",
+                      "ui_name": "Aspergillus oryzae RIB40 iWV1314"
                     },
                     {
                       "value": "iMM904",
