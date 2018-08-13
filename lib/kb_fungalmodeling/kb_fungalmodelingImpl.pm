@@ -1067,7 +1067,7 @@ foreach my $k (keys $templateId){
         });
     }
     # removing z compartment reactions from individual model propagations - need to change the input model name
-    if (params->{template_model} ne 'default_temp'){
+    if ($params->{template_model} ne 'default_temp'){
         my $edited_model = $fbaO->edit_metabolic_model({
 
             fbamodel_id => $params->{workspace}.'/'.$dr_model,
