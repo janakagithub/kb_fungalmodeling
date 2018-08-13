@@ -707,7 +707,7 @@ foreach my $k (keys $templateId){
             fbamodel_workspace => $template_ws,
             proteincomparison_id =>  $protCompId, #'proteinCompAspergillus_oryzae',
             proteincomparison_workspace => $params->{workspace},
-            fbamodel_output_id =>  $params->{output_model},
+            fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
             keep_nogene_rxn => 0,
             #media_id =>
@@ -1061,6 +1061,25 @@ foreach my $k (keys $templateId){
             reactions_to_remove => join (',',@{$removeRxnsArr}),
             reactions_to_change => [],
             reactions_to_add => $addReactionArr,
+            edit_compound_stoichiometry => []
+
+
+        });
+    }
+    # removing z compartment reactions from individual model propagations - need to change the input model name
+    if (params->{template_model} ne 'default_temp'){
+        my $edited_model = $fbaO->edit_metabolic_model({
+
+            fbamodel_id => $params->{workspace}.'/'.$dr_model,
+            fbamodel_output_id => $params->{output_model},
+            workspace =>  $params->{workspace},
+            compounds_to_add => [],
+            compounds_to_change => [],
+            biomasses_to_add => [],
+            biomass_compounds_to_change => [],
+            reactions_to_remove => join (',', @{$compt_Z_reaction_arr}),
+            reactions_to_change => [],
+            reactions_to_add => [], #$addReactionArr, Could add removed reactions as cytosol need to check on this
             edit_compound_stoichiometry => []
 
 

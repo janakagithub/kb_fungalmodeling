@@ -6,7 +6,7 @@ tooltip: |
     Build Fungal Model
 screenshots: []
 
-icon: null
+icon: fungalmodel-teal.png
 
 #
 # define a set of similar methods that might be useful to the user
@@ -21,7 +21,7 @@ suggestions:
         related:
             []
         next:
-            [annotate_contigset]
+            [gapfill_metabolic_model,run_flux_balance_analysis]
 
 #
 # Configure the display and description of parameters
@@ -54,4 +54,4 @@ parameters :
             Output model
 
 description : |
-    <p>Construct a fungal model through model propagation.</p>
+    <p><b>Construct a fungal model through model propagation</b><p>.<p>Here we introduce a methodology to construct genome-scale fungal models in an automated fashion based on a curated set of reactions that are derived from 14 published fungal metabolic models.As the basis for the method, we produced a fungal model template that encompasses the biochemistry data from the published fungal models and the structural annotations from the associated fungal genomes.</p> <p>The research paper associated with this method is in preperation.</p>
