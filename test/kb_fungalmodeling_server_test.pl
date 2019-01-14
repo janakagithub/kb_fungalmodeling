@@ -45,6 +45,15 @@ my $protInput = {
         output_model =>  'prpogated_model_out_'.$input_genome
 };
 
+my $protInputCustom = {
+        workspace => $ws,
+        genome_ref => $input_genome,
+        template_model =>  'Custom',
+        custom_model => 'iJL1454_KBase',
+        translation_policy =>  'translate_only',
+        gapfill_model => 0,
+        output_model =>  'prpogated_model_out_'.$input_genome
+};
 my $template_ws= 'jplfaria:narrative_1510597445008'; #janakakbase:narrative_1509987427391';
 
 my $templateBuild = {
@@ -70,7 +79,7 @@ my $testGenomeUpload = {
 
 
 eval {
-    my $ret =$impl->build_fungal_model($protInput);
+    my $ret =$impl->build_fungal_model($protInputCustom);
     #my $ret =$impl->build_fungal_template($templateBuild);
     #my $ret =$impl->build_model_stats($modelStats);
     #my $ret =$impl->update_model ($testGenomeUpload);

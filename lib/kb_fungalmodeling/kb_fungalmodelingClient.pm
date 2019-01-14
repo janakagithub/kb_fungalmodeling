@@ -129,6 +129,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	gapfill_model has a value which is an int
 	media_ref has a value which is a string
 	translation_policy has a value which is a string
+	custom_model has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -149,6 +150,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	gapfill_model has a value which is an int
 	media_ref has a value which is a string
 	translation_policy has a value which is a string
+	custom_model has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -618,6 +620,7 @@ template_model has a value which is a string
 gapfill_model has a value which is an int
 media_ref has a value which is a string
 translation_policy has a value which is a string
+custom_model has a value which is a string
 output_model has a value which is a string
 
 </pre>
@@ -633,6 +636,7 @@ template_model has a value which is a string
 gapfill_model has a value which is an int
 media_ref has a value which is a string
 translation_policy has a value which is a string
+custom_model has a value which is a string
 output_model has a value which is a string
 
 

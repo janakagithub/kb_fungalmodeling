@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "gapfill_model",
     "media_ref",
     "translation_policy",
+    "custom_model",
     "output_model"
 })
 public class FungalmodelbuiltInput {
@@ -41,6 +42,8 @@ public class FungalmodelbuiltInput {
     private String mediaRef;
     @JsonProperty("translation_policy")
     private String translationPolicy;
+    @JsonProperty("custom_model")
+    private String customModel;
     @JsonProperty("output_model")
     private String outputModel;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
@@ -135,6 +138,21 @@ public class FungalmodelbuiltInput {
         return this;
     }
 
+    @JsonProperty("custom_model")
+    public String getCustomModel() {
+        return customModel;
+    }
+
+    @JsonProperty("custom_model")
+    public void setCustomModel(String customModel) {
+        this.customModel = customModel;
+    }
+
+    public FungalmodelbuiltInput withCustomModel(String customModel) {
+        this.customModel = customModel;
+        return this;
+    }
+
     @JsonProperty("output_model")
     public String getOutputModel() {
         return outputModel;
@@ -162,7 +180,7 @@ public class FungalmodelbuiltInput {
 
     @Override
     public String toString() {
-        return ((((((((((((((((("FungalmodelbuiltInput"+" [workspace=")+ workspace)+", genomeRef=")+ genomeRef)+", templateModel=")+ templateModel)+", gapfillModel=")+ gapfillModel)+", mediaRef=")+ mediaRef)+", translationPolicy=")+ translationPolicy)+", outputModel=")+ outputModel)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((("FungalmodelbuiltInput"+" [workspace=")+ workspace)+", genomeRef=")+ genomeRef)+", templateModel=")+ templateModel)+", gapfillModel=")+ gapfillModel)+", mediaRef=")+ mediaRef)+", translationPolicy=")+ translationPolicy)+", customModel=")+ customModel)+", outputModel=")+ outputModel)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

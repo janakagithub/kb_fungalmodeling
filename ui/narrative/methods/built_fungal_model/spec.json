@@ -113,6 +113,12 @@
                       "display": "Saccharomyces cerevisiae iMM904",
                       "id": "iMM904",
                       "ui_name": "Saccharomyces cerevisiae iMM904"
+                    },
+                    {
+                      "value": "Custom",
+                      "display": "Custom template",
+                      "id": "Custom",
+                      "ui_name": "Custom template"
                     }
 
                 ]
@@ -146,6 +152,17 @@
             "text_options" : {
             "valid_ws_types" : [ "KBaseFBA.FBAModel" ],
             "is_output_name":true
+            }
+        },
+        {
+            "id" : "custom_model",
+            "optional" : true,
+            "advanced" : true,
+            "allow_multiple" : false,
+            "default_values" : [ "" ],
+            "field_type" : "text",
+            "text_options" : {
+            "valid_ws_types" : [ "KBaseFBA.FBAModel" ]
             }
         },
         {
@@ -199,6 +216,10 @@
                 {
                     "input_parameter": "gapfill_model",
                     "target_property": "gapfill_model"
+                },
+                {
+                    "input_parameter": "custom_model",
+                    "target_property": "custom_model"
                 },
                 {
                     "input_parameter": "template_model",
