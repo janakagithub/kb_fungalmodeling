@@ -708,7 +708,7 @@ foreach my $k (keys $templateId){
         output_id => $protCompId
     });
     print "Producing a draft model based on $protCompId proteome comparison\n";
-    die;
+
 
     my $gpModelFromSource;
 
