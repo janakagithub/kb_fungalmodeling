@@ -372,7 +372,7 @@ sub user_model_stat_genereate {
         }
 
     }
-    my $uModelGprRxnCount
+    my $uModelGprRxnCount;
     if (defined $uMGPRcount){
     $uModelGprRxnCount = keys $uMGPRcount;
 
