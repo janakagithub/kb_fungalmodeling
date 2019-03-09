@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org
 our $VERSION = '1.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/kb_fungalmodeling.git';
-our $GIT_COMMIT_HASH = 'f2cdcb0a283a3ffea415da19829873ecc75c02fe';
+our $GIT_COMMIT_HASH = '1bdc62403603c8d99b0eacc3e1d51718596e61ae';
 
 =head1 NAME
 
@@ -372,9 +372,14 @@ sub user_model_stat_genereate {
         }
 
     }
+    my $uModelGprRxnCount
+    if (defined $uMGPRcount){
+    $uModelGprRxnCount = keys $uMGPRcount;
 
-
-    my $uModelGprRxnCount = keys $uMGPRcount;
+    }
+    else{
+    $uModelGprRxnCount =0;
+    }
 
     my $return_user_stats = {
 
