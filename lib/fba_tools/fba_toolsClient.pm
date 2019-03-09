@@ -56,7 +56,7 @@ sub new
     if (exists $arg_hash{"async_job_check_max_time_ms"}) {
         $self->{async_job_check_max_time} = $arg_hash{"async_job_check_max_time_ms"} / 1000.0;
     }
-    my $service_version = 'release';
+    my $service_version = 'beta';
     if (exists $arg_hash{"service_version"}) {
         $service_version = $arg_hash{"service_version"};
     }
@@ -338,6 +338,133 @@ sub _build_metabolic_model_submit {
         Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _build_metabolic_model_submit",
                         status_line => $self->{client}->status_line,
                         method_name => '_build_metabolic_model_submit');
+    }
+}
+
+ 
+
+
+=head2 build_plant_metabolic_model
+
+  $return = $obj->build_plant_metabolic_model($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a fba_tools.BuildPlantMetabolicModelParams
+$return is a fba_tools.BuildPlantMetabolicModelResults
+BuildPlantMetabolicModelParams is a reference to a hash where the following keys are defined:
+	genome_id has a value which is a fba_tools.genome_id
+	genome_workspace has a value which is a fba_tools.workspace_name
+	fbamodel_output_id has a value which is a fba_tools.fbamodel_id
+	workspace has a value which is a fba_tools.workspace_name
+	template_id has a value which is a fba_tools.template_id
+	template_workspace has a value which is a fba_tools.workspace_name
+genome_id is a string
+workspace_name is a string
+fbamodel_id is a string
+template_id is a string
+BuildPlantMetabolicModelResults is a reference to a hash where the following keys are defined:
+	new_fbamodel_ref has a value which is a fba_tools.ws_fbamodel_id
+ws_fbamodel_id is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a fba_tools.BuildPlantMetabolicModelParams
+$return is a fba_tools.BuildPlantMetabolicModelResults
+BuildPlantMetabolicModelParams is a reference to a hash where the following keys are defined:
+	genome_id has a value which is a fba_tools.genome_id
+	genome_workspace has a value which is a fba_tools.workspace_name
+	fbamodel_output_id has a value which is a fba_tools.fbamodel_id
+	workspace has a value which is a fba_tools.workspace_name
+	template_id has a value which is a fba_tools.template_id
+	template_workspace has a value which is a fba_tools.workspace_name
+genome_id is a string
+workspace_name is a string
+fbamodel_id is a string
+template_id is a string
+BuildPlantMetabolicModelResults is a reference to a hash where the following keys are defined:
+	new_fbamodel_ref has a value which is a fba_tools.ws_fbamodel_id
+ws_fbamodel_id is a string
+
+
+=end text
+
+=item Description
+
+Build a genome-scale metabolic model based on annotations in an input genome typed object
+
+=back
+
+=cut
+
+sub build_plant_metabolic_model
+{
+    my($self, @args) = @_;
+    my $job_id = $self->_build_plant_metabolic_model_submit(@args);
+    my $async_job_check_time = $self->{async_job_check_time};
+    while (1) {
+        Time::HiRes::sleep($async_job_check_time);
+        $async_job_check_time *= $self->{async_job_check_time_scale_percent} / 100.0;
+        if ($async_job_check_time > $self->{async_job_check_max_time}) {
+            $async_job_check_time = $self->{async_job_check_max_time};
+        }
+        my $job_state_ref = $self->_check_job($job_id);
+        if ($job_state_ref->{"finished"} != 0) {
+            if (!exists $job_state_ref->{"result"}) {
+                $job_state_ref->{"result"} = [];
+            }
+            return wantarray ? @{$job_state_ref->{"result"}} : $job_state_ref->{"result"}->[0];
+        }
+    }
+}
+
+sub _build_plant_metabolic_model_submit {
+    my($self, @args) = @_;
+# Authentication: required
+    if ((my $n = @args) != 1) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+                                   "Invalid argument count for function _build_plant_metabolic_model_submit (received $n, expecting 1)");
+    }
+    {
+        my($params) = @args;
+        my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+            my $msg = "Invalid arguments passed to _build_plant_metabolic_model_submit:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+            Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => '_build_plant_metabolic_model_submit');
+        }
+    }
+    my $context = undef;
+    if ($self->{service_version}) {
+        $context = {'service_ver' => $self->{service_version}};
+    }
+    my $result = $self->{client}->call($self->{url}, $self->{headers}, {
+        method => "fba_tools._build_plant_metabolic_model_submit",
+        params => \@args, context => $context});
+    if ($result) {
+        if ($result->is_error) {
+            Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+                           code => $result->content->{error}->{code},
+                           method_name => '_build_plant_metabolic_model_submit',
+                           data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+            );
+        } else {
+            return $result->result->[0];  # job_id
+        }
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method _build_plant_metabolic_model_submit",
+                        status_line => $self->{client}->status_line,
+                        method_name => '_build_plant_metabolic_model_submit');
     }
 }
 
@@ -2784,7 +2911,9 @@ ModelObjectSelectionParams is a reference to a hash where the following keys are
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 	save_to_shock has a value which is a fba_tools.boolean
+	fulldb has a value which is a fba_tools.bool
 boolean is an int
+bool is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
@@ -2801,7 +2930,9 @@ ModelObjectSelectionParams is a reference to a hash where the following keys are
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 	save_to_shock has a value which is a fba_tools.boolean
+	fulldb has a value which is a fba_tools.bool
 boolean is an int
+bool is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
@@ -2899,7 +3030,9 @@ ModelObjectSelectionParams is a reference to a hash where the following keys are
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 	save_to_shock has a value which is a fba_tools.boolean
+	fulldb has a value which is a fba_tools.bool
 boolean is an int
+bool is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
@@ -2916,7 +3049,9 @@ ModelObjectSelectionParams is a reference to a hash where the following keys are
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 	save_to_shock has a value which is a fba_tools.boolean
+	fulldb has a value which is a fba_tools.bool
 boolean is an int
+bool is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
@@ -3014,7 +3149,9 @@ ModelObjectSelectionParams is a reference to a hash where the following keys are
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 	save_to_shock has a value which is a fba_tools.boolean
+	fulldb has a value which is a fba_tools.bool
 boolean is an int
+bool is an int
 ModelTsvFiles is a reference to a hash where the following keys are defined:
 	compounds_file has a value which is a fba_tools.File
 	reactions_file has a value which is a fba_tools.File
@@ -3034,7 +3171,9 @@ ModelObjectSelectionParams is a reference to a hash where the following keys are
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 	save_to_shock has a value which is a fba_tools.boolean
+	fulldb has a value which is a fba_tools.bool
 boolean is an int
+bool is an int
 ModelTsvFiles is a reference to a hash where the following keys are defined:
 	compounds_file has a value which is a fba_tools.File
 	reactions_file has a value which is a fba_tools.File
@@ -5378,6 +5517,7 @@ BulkExportObjectsParams is a reference to a hash where the following keys are de
 	phenotype_format has a value which is a string
 	phenosim_format has a value which is a string
 	workspace has a value which is a string
+	report_workspace has a value which is a string
 bool is an int
 BulkExportObjectsResult is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -5406,6 +5546,7 @@ BulkExportObjectsParams is a reference to a hash where the following keys are de
 	phenotype_format has a value which is a string
 	phenosim_format has a value which is a string
 	workspace has a value which is a string
+	report_workspace has a value which is a string
 bool is an int
 BulkExportObjectsResult is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -6449,6 +6590,76 @@ new_fbamodel_ref has a value which is a fba_tools.ws_fbamodel_id
 new_fba_ref has a value which is a fba_tools.ws_fba_id
 number_gapfilled_reactions has a value which is an int
 number_removed_biomass_compounds has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 BuildPlantMetabolicModelParams
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+genome_id has a value which is a fba_tools.genome_id
+genome_workspace has a value which is a fba_tools.workspace_name
+fbamodel_output_id has a value which is a fba_tools.fbamodel_id
+workspace has a value which is a fba_tools.workspace_name
+template_id has a value which is a fba_tools.template_id
+template_workspace has a value which is a fba_tools.workspace_name
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+genome_id has a value which is a fba_tools.genome_id
+genome_workspace has a value which is a fba_tools.workspace_name
+fbamodel_output_id has a value which is a fba_tools.fbamodel_id
+workspace has a value which is a fba_tools.workspace_name
+template_id has a value which is a fba_tools.template_id
+template_workspace has a value which is a fba_tools.workspace_name
+
+
+=end text
+
+=back
+
+
+
+=head2 BuildPlantMetabolicModelResults
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+new_fbamodel_ref has a value which is a fba_tools.ws_fbamodel_id
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+new_fbamodel_ref has a value which is a fba_tools.ws_fbamodel_id
 
 
 =end text
@@ -7919,6 +8130,7 @@ a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 model_name has a value which is a string
 save_to_shock has a value which is a fba_tools.boolean
+fulldb has a value which is a fba_tools.bool
 
 </pre>
 
@@ -7930,6 +8142,7 @@ a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 model_name has a value which is a string
 save_to_shock has a value which is a fba_tools.boolean
+fulldb has a value which is a fba_tools.bool
 
 
 =end text
@@ -8247,6 +8460,7 @@ media_format has a value which is a string
 phenotype_format has a value which is a string
 phenosim_format has a value which is a string
 workspace has a value which is a string
+report_workspace has a value which is a string
 
 </pre>
 
@@ -8267,6 +8481,7 @@ media_format has a value which is a string
 phenotype_format has a value which is a string
 phenosim_format has a value which is a string
 workspace has a value which is a string
+report_workspace has a value which is a string
 
 
 =end text
