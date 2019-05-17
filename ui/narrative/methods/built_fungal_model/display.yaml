@@ -3,7 +3,7 @@
 #
 name: Build Fungal Model
 tooltip: |
-    Build Fungal Model
+    Allows users to build a Fungal metabolic model.
 screenshots: []
 
 icon: fungalmodel-teal.png
@@ -31,35 +31,53 @@ parameters :
         ui-name : |
             Genome Name
         short-hint : |
-            Genome Name
+            Select the Genome from which to construct the model.
     template_model :
         ui-name : |
-            Template type
+            Template Type
         short-hint : |
-            Template type
+            TSelect either the default template (consolidates all published fungal models listed) or an individual model as the template.
     gapfill_model :
         ui-name : |
-            Gapfill the model
+            Gapfill the Model
         short-hint : |
-            Gapfill the model in complete media
+            Gapfill the model in complete media (an arbitrary media where the model could uptake any nutrient that it has a transporter for).
     translation_policy :
         ui-name : |
-            Translation policy
+            Translation Policy
         short-hint : |
-            Translation_policy
+            Choose either "translation only" where the starting model will be translated based on the proteome comparison data generated against the selected template or "add unique genes" where reactions associated with any unique genes will be added.
     custom_model :
         ui-name : |
-            Custom model
+            Custom Model
         short-hint : |
-            Custom model name
+            Select a custom model as the template for model propagation. Two requirements need to be met in order to use a custom template: (i) the name of the custom template must be given and (ii) the "Custom Template" option from the dropdown under "Template Type" must be chosen.
     output_model :
         ui-name : |
-            Output model
+            Output Model
         short-hint : |
-            Output model
+            The name for the newly constructed model.
 
 description : |
-    <p><b>Construct a fungal model through model propagation</b><p>.<p>Here we introduce a methodology to construct genome-scale fungal models in an automated fashion based on a curated set of reactions that are derived from 14 published fungal metabolic models.As the basis for the method, we produced a fungal model template that encompasses the biochemistry data from the published fungal models and the structural annotations from the associated fungal genomes.</p><p> This approach uses structural annotations of any user-submitted fungal genome and computes a set of orthologous proteins against the curated fungal template in order to assert the presence or absence of specific biochemical reactions and pathways. Once the orthologous protein families are determined, the related biochemistry data is propagated to construct a new draft metabolic model. Once the draft metabolic models are derived, additional reactions been added based on available functional annotations</p> <p>The research paper associated with this method is in preperation.</p>
+    <p>This App allows users to construct models for fungal genomes through model propagation. It constructs genome-scale fungal models using a curated set of reactions derived from 14 published fungal metabolic models (listed under the “Template type” field). As the basis for the method, we produced a consolidated default template model that encompasses the biochemistry data from the published fungal models and the structural annotations from the associated fungal genomes.</p>
+
+    <p>This approach involves:
+      <ol>
+        <li>Computing a set of orthologous proteins (a ProteomeComparison object) based on the input Genome's structural annotations and the fungal template.</li>
+        <li>Ascertaining the specific biochemical reactions that represent the metabolism of the input Genome via the orthologous proteins.</li>
+        <li>Propagating the related biochemistry data from the curated fungal template to construct a draft metabolic model.</li>
+        <li>Gapfilling the draft metabolic model based on complete media (if the "Gapfil the model" option is checked).</li>
+        <li>Adding additional reactions based on available functional annotations.</li>
+      </ol>
+    </p>
+    <p>The draft model that is constructed can be applied to any downstream model analysis App in KBase that takes a metabolic model as an input.</p>
+
+    <p>Please see the Metabolic Modeling section of the App catalog for possible subsequent steps in the metabolic modeling process. Some of the popular modeling Apps that take a model as input include: <a href=”https://narrative.kbase.us/#catalog/apps/fba_tools/gapfill_metabolic_model/584206644abfeb5f3184783aaa27b3a0993ca583”>Gapfill Metabolic Model</a>, <a href=”https://narrative.kbase.us/#catalog/apps/fba_tools/run_flux_balance_analysis/584206644abfeb5f3184783aaa27b3a0993ca583”>Run Flux Balance Analysis</a>, <a href=”https://narrative.kbase.us/#catalog/apps/fba_tools/edit_metabolic_model/584206644abfeb5f3184783aaa27b3a0993ca583”>Edit Metabolic Model</a>, <a href=”https://narrative.kbase.us/#catalog/apps/fba_tools/merge_metabolic_models_into_community_model/584206644abfeb5f3184783aaa27b3a0993ca583”>Merge Metabolic Model into Community Model</a>, and <a href=”https://narrative.kbase.us/#catalog/apps/fba_tools/compare_models/584206644abfeb5f3184783aaa27b3a0993ca583”>Compare Models</a>.</p>
+
+    <p>The research paper associated with this App is in preparation.</p>
+
+    <p><strong>Team members who developed & deployed algorithm in KBase:</strong> Janaka Edirisinghe, Filipe Liu, Jose Faria, Sara Calhoun, Igor Grigoriev, and Chris Henry. For questions, please <a href="http://kbase.us/contact-us/">contact us</a>.</p>
+
 
 publications :
     -
