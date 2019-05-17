@@ -3,9 +3,9 @@ use strict;
 use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
 # http://semver.org
-our $VERSION = '0.0.1';
+our $VERSION = '1.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/kb_fungalmodeling.git';
-our $GIT_COMMIT_HASH = 'c9c4015fce083ace29122468e7a63f8d0b2c7a28';
+our $GIT_COMMIT_HASH = '1bdc62403603c8d99b0eacc3e1d51718596e61ae';
 
 =head1 NAME
 
@@ -372,9 +372,14 @@ sub user_model_stat_genereate {
         }
 
     }
+    my $uModelGprRxnCount;
+    if (defined $uMGPRcount){
+    $uModelGprRxnCount = keys $uMGPRcount;
 
-
-    my $uModelGprRxnCount = keys $uMGPRcount;
+    }
+    else{
+    $uModelGprRxnCount =0;
+    }
 
     my $return_user_stats = {
 
@@ -448,6 +453,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	gapfill_model has a value which is an int
 	media_ref has a value which is a string
 	translation_policy has a value which is a string
+	custom_model has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -468,6 +474,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	gapfill_model has a value which is an int
 	media_ref has a value which is a string
 	translation_policy has a value which is a string
+	custom_model has a value which is a string
 	output_model has a value which is a string
 fungalmodelbuiltOutput is a reference to a hash where the following keys are defined:
 	report_name has a value which is a string
@@ -536,6 +543,8 @@ sub build_fungal_model
     my $tmpGenome;
     my $tmpModel;
 
+
+
     my $templateId = {
       default_temp => [$template_model_ref, $template_genome_ref,$template_genome_ref],
       iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus_NIH2624','GCF_000149615.1'],
@@ -550,8 +559,7 @@ sub build_fungal_model
       iNL895 =>  ['iNL895_KBase', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
       iWV1213 => ['iWV1213_KBase', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
       iWV1314 => ['iWV1314_KBase', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
-      iMM904 => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c','GCF_000146045.2']
-
+      iMM904 => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
 
     };
 
@@ -652,7 +660,7 @@ foreach my $k (keys $templateId){
   #print &Dumper ($eachModelCpds);
   #print &Dumper ($eachModelMSCpds);
 
-    if (defined $params->{template_model}) {
+    if (defined $params->{template_model} && $params->{template_model} ne "Custom") {
 
       print "Template selected as $params->{template_model} \n";
       $tmpModel = $templateId->{$params->{template_model}}->[0];
@@ -661,6 +669,30 @@ foreach my $k (keys $templateId){
       print &Dumper ($templateId);
 
     }
+    elsif (defined $params->{template_model} && defined $params->{custom_model} && $params->{template_model} eq "Custom") {
+      print "Template selected as $params->{template_model}, custom model is $params->{custom_model}\n";
+      $tmpModel = $params->{custom_model};
+      my $custom_model_ref_handle = $wshandle->get_objects([{workspace=>$params->{workspace},name=> $tmpModel}] )->[0]{data};
+      my $custom_genome_ref_handle = $wshandle->get_objects([{ref => $custom_model_ref_handle->{genome_ref}}] )->[0]{info};
+
+      print &Dumper ($custom_genome_ref_handle->[1]);
+
+
+      $tmpGenome = $custom_genome_ref_handle->[1];
+      $template_ws = $params->{workspace};
+      #$tmpGenome = $templateGenomeRefs->{$params->{template_model}};
+      print $tmpModel. "\t". $params->{genome_ref}."\t". $custom_model_ref_handle->{genome_ref}. "\t". $tmpGenome . "\n";
+
+
+
+    }
+    else{
+
+        print "Custom template model not selected, please re-run the app 1.) Select 'Custom' from the dropdown and then 2.) select the custom model in advance options. \n";
+        die;
+    }
+
+
     my $tran_policy;
     if (defined $params->{translation_policy}){
       $tran_policy = $params->{translation_policy};
@@ -671,6 +703,7 @@ foreach my $k (keys $templateId){
     my $dr_model =$params->{genome_ref}."_draftModel";
 #=head # commenting the protein comparison
     print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
+    print $tmpModel. "\t". $params->{genome_ref}."\t". $tmpGenome . "\n";
     my $protComp =  $protC->blast_proteomes({
         genome1ws => $params->{workspace},
         genome1id => $params->{genome_ref},
@@ -1465,6 +1498,7 @@ my $templateModel;
                 $biomass_cpd_remove = {
            biomass_id => 'bio1',
            biomass_compound_id => $cpdid[-1],
+
            biomass_coefficient => 0
         };
         push (@{$tempbiomassArr},$biomass_cpd_remove );
@@ -2432,6 +2466,7 @@ template_model has a value which is a string
 gapfill_model has a value which is an int
 media_ref has a value which is a string
 translation_policy has a value which is a string
+custom_model has a value which is a string
 output_model has a value which is a string
 
 </pre>
@@ -2447,6 +2482,7 @@ template_model has a value which is a string
 gapfill_model has a value which is an int
 media_ref has a value which is a string
 translation_policy has a value which is a string
+custom_model has a value which is a string
 output_model has a value which is a string
 
 

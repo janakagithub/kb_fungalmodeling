@@ -47,6 +47,11 @@ parameters :
             Translation policy
         short-hint : |
             Translation_policy
+    custom_model :
+        ui-name : |
+            Custom model
+        short-hint : |
+            Custom model name
     output_model :
         ui-name : |
             Output model

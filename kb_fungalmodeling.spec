@@ -13,6 +13,7 @@ module kb_fungalmodeling {
         int  gapfill_model;
         string media_ref;
         string  translation_policy;
+        string custom_model;
         string  output_model;
     } fungalmodelbuiltInput;
 
