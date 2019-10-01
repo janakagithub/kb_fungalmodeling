@@ -722,13 +722,8 @@ foreach my $k (keys $templateId){
             output_ws => $params->{workspace},
             output_id => $protCompId
         });
-        die;
+
     }
-
-    print &Dumper ($params);
-    print "\n". $protCompId ."\n";
-    print "Producing a draft model based on $protCompId proteome comparison\n";
-
 
     my $gpModelFromSource;
 
