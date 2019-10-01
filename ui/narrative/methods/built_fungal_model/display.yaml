@@ -52,6 +52,11 @@ parameters :
             Custom Model
         short-hint : |
             Select a custom model as the template for model propagation. Two requirements need to be met in order to use a custom template: (i) the name of the custom template must be given and (ii) the "Custom Template" option from the dropdown under "Template Type" must be chosen.
+    proteintr_ref :
+        ui-name : |
+            Proteome Comparison
+        short-hint : |
+            Use an existing proteome comparison to build a model, keep it blank to generate a new proteome comparison.
     output_model :
         ui-name : |
             Output Model
