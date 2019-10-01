@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "template_model",
     "gapfill_model",
     "media_ref",
+    "proteintr_ref",
     "translation_policy",
     "custom_model",
     "output_model"
@@ -40,6 +41,8 @@ public class FungalmodelbuiltInput {
     private Long gapfillModel;
     @JsonProperty("media_ref")
     private String mediaRef;
+    @JsonProperty("proteintr_ref")
+    private String proteintrRef;
     @JsonProperty("translation_policy")
     private String translationPolicy;
     @JsonProperty("custom_model")
@@ -123,6 +126,21 @@ public class FungalmodelbuiltInput {
         return this;
     }
 
+    @JsonProperty("proteintr_ref")
+    public String getProteintrRef() {
+        return proteintrRef;
+    }
+
+    @JsonProperty("proteintr_ref")
+    public void setProteintrRef(String proteintrRef) {
+        this.proteintrRef = proteintrRef;
+    }
+
+    public FungalmodelbuiltInput withProteintrRef(String proteintrRef) {
+        this.proteintrRef = proteintrRef;
+        return this;
+    }
+
     @JsonProperty("translation_policy")
     public String getTranslationPolicy() {
         return translationPolicy;
@@ -180,7 +198,7 @@ public class FungalmodelbuiltInput {
 
     @Override
     public String toString() {
-        return ((((((((((((((((((("FungalmodelbuiltInput"+" [workspace=")+ workspace)+", genomeRef=")+ genomeRef)+", templateModel=")+ templateModel)+", gapfillModel=")+ gapfillModel)+", mediaRef=")+ mediaRef)+", translationPolicy=")+ translationPolicy)+", customModel=")+ customModel)+", outputModel=")+ outputModel)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((("FungalmodelbuiltInput"+" [workspace=")+ workspace)+", genomeRef=")+ genomeRef)+", templateModel=")+ templateModel)+", gapfillModel=")+ gapfillModel)+", mediaRef=")+ mediaRef)+", proteintrRef=")+ proteintrRef)+", translationPolicy=")+ translationPolicy)+", customModel=")+ customModel)+", outputModel=")+ outputModel)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

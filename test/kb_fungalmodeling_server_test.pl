@@ -33,13 +33,15 @@ sub get_ws_name {
 =cut
 
 #my $ws = "janakakbase:narrative_1509376805185";
-#my $ws = "janakakbase:narrative_1498154949048";
-my $ws = 'janakakbase:narrative_1509987427391';
+#my $ws = "janakakbase:narrative_1498154949048";  #ws id 22191
+my $ws = 'janakakbase:narrative_1509987427391'; #prod. ws 25857      #Template workspace in production jplfaria:narrative_1510597445008
 my $input_genome = 'Psean1';
 my $protInput = {
         workspace => $ws,
         genome_ref => $input_genome,
         template_model =>  'default_temp',
+        #proteintr_ref =>  'proteinCompNeurospora_crassa_OR74A', #25857/165/9
+        proteintr_ref =>  '25857/165/9',
         translation_policy =>  'translate_only',
         gapfill_model => 0,
         output_model =>  'prpogated_model_out_'.$input_genome
@@ -79,10 +81,10 @@ my $testGenomeUpload = {
 
 
 eval {
-    my $ret =$impl->build_fungal_model($protInputCustom);
+    my $ret =$impl->build_fungal_model($protInput);
     #my $ret =$impl->build_fungal_template($templateBuild);
     #my $ret =$impl->build_model_stats($modelStats);
-    #my $ret =$impl->update_model ($testGenomeUpload);
+    my $ret =$impl->update_model ($testGenomeUpload);
     #print &Dumper ($ret);
 };
 

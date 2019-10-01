@@ -38,9 +38,9 @@ class kb_fungalmodeling(object):
         :param params: instance of type "fungalmodelbuiltInput" -> structure:
            parameter "workspace" of String, parameter "genome_ref" of String,
            parameter "template_model" of String, parameter "gapfill_model" of
-           Long, parameter "media_ref" of String, parameter
-           "translation_policy" of String, parameter "custom_model" of
-           String, parameter "output_model" of String
+           Long, parameter "media_ref" of String, parameter "proteintr_ref"
+           of String, parameter "translation_policy" of String, parameter
+           "custom_model" of String, parameter "output_model" of String
         :returns: instance of type "fungalmodelbuiltOutput" -> structure:
            parameter "report_name" of String, parameter "report_ref" of String
         """

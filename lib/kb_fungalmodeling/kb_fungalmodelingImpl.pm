@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org
 our $VERSION = '1.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/kb_fungalmodeling.git';
-our $GIT_COMMIT_HASH = '1bdc62403603c8d99b0eacc3e1d51718596e61ae';
+our $GIT_COMMIT_HASH = 'e70428a48da47737f4c636a837519fe9815fcf75';
 
 =head1 NAME
 
@@ -452,6 +452,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	template_model has a value which is a string
 	gapfill_model has a value which is an int
 	media_ref has a value which is a string
+	proteintr_ref has a value which is a string
 	translation_policy has a value which is a string
 	custom_model has a value which is a string
 	output_model has a value which is a string
@@ -473,6 +474,7 @@ fungalmodelbuiltInput is a reference to a hash where the following keys are defi
 	template_model has a value which is a string
 	gapfill_model has a value which is an int
 	media_ref has a value which is a string
+	proteintr_ref has a value which is a string
 	translation_policy has a value which is a string
 	custom_model has a value which is a string
 	output_model has a value which is a string
@@ -701,17 +703,30 @@ foreach my $k (keys $templateId){
 
 
     my $dr_model =$params->{genome_ref}."_draftModel";
-#=head # commenting the protein comparison
-    print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
-    print $tmpModel. "\t". $params->{genome_ref}."\t". $tmpGenome . "\n";
-    my $protComp =  $protC->blast_proteomes({
-        genome1ws => $params->{workspace},
-        genome1id => $params->{genome_ref},
-        genome2ws => $template_ws,
-        genome2id => $tmpGenome,
-        output_ws => $params->{workspace},
-        output_id => $protCompId
-    });
+    my $protComp;
+
+    if (defined $params->{proteintr_ref}){
+
+      $protCompId = $params->{proteintr_ref};
+
+    }else {
+
+        #=head # commenting the protein comparison
+        print "producing a proteome comparison object between $params->{genome_ref} and $tmpGenome\n";
+        print $tmpModel. "\t". $params->{genome_ref}."\t". $tmpGenome . "\n";
+        $protComp =  $protC->blast_proteomes({
+            genome1ws => $params->{workspace},
+            genome1id => $params->{genome_ref},
+            genome2ws => $template_ws,
+            genome2id => $tmpGenome,
+            output_ws => $params->{workspace},
+            output_id => $protCompId
+        });
+        die;
+    }
+
+    print &Dumper ($params);
+    print "\n". $protCompId ."\n";
     print "Producing a draft model based on $protCompId proteome comparison\n";
 
 
@@ -734,6 +749,7 @@ foreach my $k (keys $templateId){
         });
     }
     elsif ($params->{gapfill_model} == 0 && $params->{template_model} ne 'default_temp'){
+
 
          my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
@@ -2251,8 +2267,9 @@ sub update_model
     #ci ws test workspace with the Narrative = 29112
 
       eval{
-        #$genome_list = $wshandle->list_objects({ids=>[28129],type=>"KBaseGenomes.Genome"});
-        $genome_list = $wshandle->list_objects({ids=>[32690],type=>"KBaseGenomes.Genome"});
+        #I modified here May 7th
+        $genome_list = $wshandle->list_objects({ids=>[28129],type=>"KBaseGenomes.Genome"});
+        #$genome_list = $wshandle->list_objects({ids=>[32690],type=>"KBaseGenomes.Genome"});
 
       };
       if ($@) {
@@ -2284,7 +2301,7 @@ sub update_model
 
       }
       close INFILETax;
-      print &Dumper (\%taxaHash);
+      #print &Dumper (\%taxaHash);
 
 
 
@@ -2301,10 +2318,13 @@ sub update_model
 
           if (exists $taxaHash{$p->[1]} ){ #&& exists $metaHash{$p->[1]}){
 
-            my $eachGenome = $wshandle->get_objects([{workspace=>$p->[7],name=>$p->[1]}] )->[0];
-          #my $pubGenomeRef = $p->[6]."/".$p->[0]."/".$p->[4];
+            #my $eachGenome = $wshandle->get_objects([{workspace=>$p->[7],name=>$p->[1]}] )->[0];
+            my $eachGenome = $wshandle->get_objects([{ref=> '34839/12/1'}] )->[0];
 
-          #$eachGenome->{info}->[10]->{Name} = 'Xylona heveae TC161';
+            print &Dumper ($eachGenome->{data});
+            die;
+            #my $pubGenomeRef = $p->[6]."/".$p->[0]."/".$p->[4];
+            #$eachGenome->{info}->[10]->{Name} = 'Xylona heveae TC161';
             print &Dumper ($eachGenome->{info});
 
             print "\n$p->[1]\t $taxaHash{$p->[1]}->[0]\t$taxaHash{$p->[1]}->[1]\t$taxaHash{$p->[1]}->[2]\n";
@@ -2465,6 +2485,7 @@ genome_ref has a value which is a string
 template_model has a value which is a string
 gapfill_model has a value which is an int
 media_ref has a value which is a string
+proteintr_ref has a value which is a string
 translation_policy has a value which is a string
 custom_model has a value which is a string
 output_model has a value which is a string
@@ -2481,6 +2502,7 @@ genome_ref has a value which is a string
 template_model has a value which is a string
 gapfill_model has a value which is an int
 media_ref has a value which is a string
+proteintr_ref has a value which is a string
 translation_policy has a value which is a string
 custom_model has a value which is a string
 output_model has a value which is a string

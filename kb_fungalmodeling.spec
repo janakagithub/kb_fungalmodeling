@@ -7,14 +7,15 @@ module kb_fungalmodeling {
 
 
     typedef structure {
-        string  workspace;
-        string  genome_ref;
-        string  template_model;
-        int  gapfill_model;
+        string workspace;
+        string genome_ref;
+        string template_model;
+        int gapfill_model;
         string media_ref;
-        string  translation_policy;
+        string proteintr_ref;
+        string translation_policy;
         string custom_model;
-        string  output_model;
+        string output_model;
     } fungalmodelbuiltInput;
 
     typedef structure {
