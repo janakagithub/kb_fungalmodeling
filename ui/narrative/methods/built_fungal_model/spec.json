@@ -166,6 +166,17 @@
             }
         },
         {
+            "id" : "proteintr_ref",
+            "optional" : true,
+            "advanced" : true,
+            "allow_multiple" : false,
+            "default_values" : [ "" ],
+            "field_type" : "text",
+            "text_options" : {
+            "valid_ws_types" : [ "GenomeComparison.ProteomeComparison" ]
+            }
+        },
+        {
             "id": "translation_policy",
             "optional": true,
             "advanced": true,
@@ -224,6 +235,10 @@
                 {
                     "input_parameter": "template_model",
                     "target_property": "template_model"
+                },
+                {
+                    "input_parameter": "proteintr_ref",
+                    "target_property": "proteintr_ref"
                 },
                 {
                     "input_parameter": "output_model",
