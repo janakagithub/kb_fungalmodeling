@@ -65,7 +65,7 @@ parameters :
 
 description : |
     <p>This App allows users to construct models for fungal genomes through model propagation. It constructs genome-scale fungal models using a curated set of reactions derived from 14 published fungal metabolic models (listed under the “Template type” field). As the basis for the method, we produced a consolidated default template model that encompasses the biochemistry data from the published fungal models and the structural annotations from the associated fungal genomes.</p>
-
+    <p>Update: Beta version by default produce a model based on genome 'Saccharomyces_cerevisiae_5288c (GCF_000146045.2)' linked to the published model iMM904.</p>
     <p>This approach involves:
       <ol>
         <li>Computing a set of orthologous proteins (a ProteomeComparison object) based on the input Genome's structural annotations and the fungal template.</li>

@@ -35,7 +35,7 @@ GenomeProteomeComparison::GenomeProteomeComparisonClient
 sub new
 {
     my($class, $url, @args) = @_;
-    
+
 
     my $self = {
 	client => GenomeProteomeComparison::GenomeProteomeComparisonClient::RpcClient->new,
@@ -109,15 +109,15 @@ sub new
 	        $self->{token} = $token->token;
 	    }
 	}
-	
+
 	if (exists $self->{token})
 	{
 	    $self->{client}->{token} = $self->{token};
 	}
     }
 
-    my $ua = $self->{client}->ua;	 
-    my $timeout = $ENV{CDMI_TIMEOUT} || (30 * 60);	 
+    my $ua = $self->{client}->ua;
+    my $timeout = $ENV{CDMI_TIMEOUT} || (30 * 60);
     $ua->timeout($timeout);
     bless $self, $class;
     #    $self->_validate_version();
@@ -280,8 +280,8 @@ sub _blast_proteomes_submit {
     }
 }
 
- 
- 
+
+
 sub status
 {
     my($self, @args) = @_;
@@ -328,7 +328,7 @@ sub status
         }
     }
 }
-   
+
 
 sub version {
     my ($self) = @_;

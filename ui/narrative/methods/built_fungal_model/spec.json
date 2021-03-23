@@ -26,15 +26,21 @@
             "optional": true,
             "advanced": false,
             "allow_multiple": false,
-            "default_values": [ "default_temp" ],
+            "default_values": [ "Saccharomyces cerevisiae iMM904" ],
             "field_type": "dropdown",
             "dropdown_options": {
                 "options": [
                     {
+                      "value": "iMM904",
+                      "display": "Saccharomyces cerevisiae iMM904",
+                      "id": "iMM904",
+                      "ui_name": "Saccharomyces cerevisiae iMM904"
+                    },
+                    {
                       "value": "default_temp",
-                      "display": "Default Template",
+                      "display": "Consolidated Template - All Models",
                       "id": "default_temp",
-                      "ui_name": "Default Template"
+                      "ui_name": "Consolidated Template - All Models"
                     },
                     {
                       "value": "iJL1454",
@@ -107,12 +113,6 @@
                       "display": "Aspergillus oryzae RIB40 iWV1314",
                       "id":  "iWV1314",
                       "ui_name": "Aspergillus oryzae RIB40 iWV1314"
-                    },
-                    {
-                      "value": "iMM904",
-                      "display": "Saccharomyces cerevisiae iMM904",
-                      "id": "iMM904",
-                      "ui_name": "Saccharomyces cerevisiae iMM904"
                     },
                     {
                       "value": "Custom",
