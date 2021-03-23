@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org
 our $VERSION = '1.0.1';
 our $GIT_URL = 'https://github.com/janakagithub/kb_fungalmodeling.git';
-our $GIT_COMMIT_HASH = 'e70428a48da47737f4c636a837519fe9815fcf75';
+our $GIT_COMMIT_HASH = 'e84a16a2f1df22331350470c1fc83b6035b1b256';
 
 =head1 NAME
 
@@ -23,8 +23,10 @@ use Bio::KBase::AuthToken;
 use Workspace::WorkspaceClient;
 use AssemblyUtil::AssemblyUtilClient;
 use KBaseReport::KBaseReportClient;
-use GenomeProteomeComparison::GenomeProteomeComparisonClient;
-use fba_tools::fba_toolsClient;
+#use GenomeProteomeComparison::GenomeProteomeComparisonClient;
+use installed_clients::GenomeProteomeComparisonClient;
+use installed_clients::fba_toolsClient;
+#use fba_tools::fba_toolsClient;
 use Config::IniFiles;
 use Bio::SeqIO;
 use UUID::Random;
@@ -517,13 +519,14 @@ sub build_fungal_model
     print(Dumper($params) . "\n");
 
 
-    my $fbaO = new fba_tools::fba_toolsClient( $self->{'callbackURL'},
-                                                            ( 'service_version' => 'release',
-                                                              'async_version' => 'release',
+    my $fbaO = new installed_clients::fba_toolsClient( $self->{'callbackURL'},
+                                                            ( 'service_version' => 'beta',
+                                                              'async_version' => 'beta',
                                                             )
                                                            );
 
-    my $protC = new GenomeProteomeComparison::GenomeProteomeComparisonClient( $self->{'callbackURL'},
+    #my $protC = new GenomeProteomeComparison::GenomeProteomeComparisonClient( $self->{'callbackURL'},
+    my $protC = new installed_clients::GenomeProteomeComparisonClient ( $self->{'callbackURL'},
                                                             ( 'service_version' => 'release',
                                                               'async_version' => 'release',
                                                             )
@@ -549,19 +552,19 @@ sub build_fungal_model
 
     my $templateId = {
       default_temp => [$template_model_ref, $template_genome_ref,$template_genome_ref],
-      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus_NIH2624','GCF_000149615.1'],
-      iNX804  => ['iNX804_KBase','Candida_glabrata_ASM254','GCF_000002545.3'],
-      iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404','GCF_000006335.2'],
-      iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL','GCF_000146045.2'],
-      iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A','GCF_000182925.2'],
-      iLC915 =>  ['iLC915_KBase', 'Komagataella_phaffii_GS115','GCF_000027005.1'],
-      iRL766 => ['iRL766_KBase', 'Eremothecium_gossypii_ATCC_10895','GCF_000091025.4'],
-      iAL1006 => ['iAL1006_KBase', 'Penicillium_rubens_Wisconsin','GCF_000226395.1'],
-      iSS884 =>  ['iSS884_KBase', 'Scheffersomyces_stipitis_CBS','GCF_000209165.1'],
-      iNL895 =>  ['iNL895_KBase', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
-      iWV1213 => ['iWV1213_KBase', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
-      iWV1314 => ['iWV1314_KBase', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
-      iMM904 => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
+      iJL1454 => ['iJL1454_KBase2', 'Aspergillus_terreus_NIH2624','GCF_000149615.1'],
+      iNX804  => ['iNX804_KBase2','Candida_glabrata_ASM254','GCF_000002545.3'],
+      iCT646 => ['iCT646_KBase2','Candida_tropicali_MYA-3404','GCF_000006335.2'],
+      iOD907 => ['iOD907_KBase2','Kluyveromyces_lactis_NRRL','GCF_000002515.2'],
+      iJDZ836 => ['iJDZ836_KBase3','Neurospora_crassa_OR74A','GCF_000182925.2'],
+      iLC915 =>  ['iLC915_KBase3', 'Komagataella_phaffii_GS115','GCF_000027005.1'],
+      iRL766 => ['iRL766_KBase2', 'Eremothecium_gossypii_ATCC_10895','GCF_000091025.4'],
+      iAL1006 => ['iAL1006_KBase3', 'Penicillium_rubens_Wisconsin','GCF_000226395.1'],
+      iSS884 =>  ['iSS884_KBase3', 'Scheffersomyces_stipitis_CBS','GCF_000209165.1'],
+      iNL895 =>  ['iNL895_KBase2', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
+      iWV1213 => ['iWV1213_KBase2', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
+      iWV1314 => ['iWV1314_KBase3', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
+      iMM904 => ['iMM904_KBase3_ExtendedBiomassV1','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
 
     };
 
@@ -745,7 +748,7 @@ foreach my $k (keys $templateId){
     }
     elsif ($params->{gapfill_model} == 0 && $params->{template_model} ne 'default_temp'){
 
-
+        print  "\n\ntemplate_model_ws\t $template_ws\t $protCompId $params->{workspace}\t $tmpModel\t$dr_model\n\n";
          my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
             fbamodel_workspace => $template_ws,
@@ -761,6 +764,8 @@ foreach my $k (keys $templateId){
         });
     }
     elsif ($params->{gapfill_model} == 0 && $params->{template_model} eq 'default_temp'){
+
+        print  "\n\ntemplate_model_ws\t $template_ws\t $protCompId $params->{workspace}\t $tmpModel\t$dr_model\n\n";
 
          my $fba_modelProp =  $fbaO->propagate_model_to_new_genome({
             fbamodel_id => $tmpModel,
@@ -1766,19 +1771,20 @@ sub build_model_stats
 
     my $templateId = {
       #default_temp => [$template_model_ref, $template_genome_ref],
-      iJL1454 => ['iJL1454_KBase', 'Aspergillus_terreus_NIH2624','GCF_000149615.1'],
-      iNX804  => ['iNX804_KBase','Candida_glabrata_ASM254','GCF_000002545.3'],
-      iCT646 => ['iCT646_KBase','Candida_tropicali_MYA-3404','GCF_000006335.2'],
-      iOD907 => ['iOD907_KBase','Kluyveromyces_lactis_NRRL','GCF_000146045.2'],
-      iJDZ836 => ['iJDZ836_KBase','Neurospora_crassa_OR74A','GCF_000182925.2'],
-      iLC915 =>  ['iLC915_KBase', 'Komagataella_phaffii_GS115','GCF_000027005.1'],
-      iRL766 => ['iRL766_KBase', 'Eremothecium_gossypii_ATCC_10895','GCF_000091025.4'],
-      iAL1006 => ['iAL1006_KBase', 'Penicillium_rubens_Wisconsin','GCF_000226395.1'],
-      iSS884 =>  ['iSS884_KBase', 'Scheffersomyces_stipitis_CBS','GCF_000209165.1'],
-      iNL895 =>  ['iNL895_KBase', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
-      iWV1213 => ['iWV1213_KBase', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
-      iWV1314 => ['iWV1314_KBase', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
-      iMM904 => ['iMM904_KBase','Saccharomyces_cerevisiae_5288c','GCF_000146045.2']
+      iJL1454 => ['iJL1454_KBase2', 'Aspergillus_terreus_NIH2624','GCF_000149615.1'],
+      iNX804  => ['iNX804_KBase2','Candida_glabrata_ASM254','GCF_000002545.3'],
+      iCT646 => ['iCT646_KBase2','Candida_tropicali_MYA-3404','GCF_000006335.2'],
+      iOD907 => ['iOD907_KBase2','Kluyveromyces_lactis_NRRL','GCF_000002515.2'],
+      iJDZ836 => ['iJDZ836_KBase3','Neurospora_crassa_OR74A','GCF_000182925.2'],
+      iLC915 =>  ['iLC915_KBase3', 'Komagataella_phaffii_GS115','GCF_000027005.1'],
+      iRL766 => ['iRL766_KBase2', 'Eremothecium_gossypii_ATCC_10895','GCF_000091025.4'],
+      iAL1006 => ['iAL1006_KBase3', 'Penicillium_rubens_Wisconsin','GCF_000226395.1'],
+      iSS884 =>  ['iSS884_KBase3', 'Scheffersomyces_stipitis_CBS','GCF_000209165.1'],
+      iNL895 =>  ['iNL895_KBase2', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
+      iWV1213 => ['iWV1213_KBase2', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
+      iWV1314 => ['iWV1314_KBase3', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
+      iMM904 => ['iMM904_KBase3_ExtendedBiomassV1','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
+
 
     };
 =head
