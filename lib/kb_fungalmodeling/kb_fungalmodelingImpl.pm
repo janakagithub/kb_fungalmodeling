@@ -778,7 +778,7 @@ foreach my $k (keys $templateId){
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
-            keep_nogene_rxn => 0,
+            keep_nogene_rxn => 1,
             #media_id =>
             #media_workspace =>
             minimum_target_flux => 0.1,
