@@ -743,7 +743,7 @@ foreach my $k (keys $templateId){
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
-            keep_nogene_rxn => 0,
+            keep_nogene_rxn => 1,
             #media_id =>
             #media_workspace =>
             minimum_target_flux => 0.1,
@@ -760,7 +760,7 @@ foreach my $k (keys $templateId){
             proteincomparison_workspace => $params->{workspace},
             fbamodel_output_id =>  $dr_model,
             workspace => $params->{workspace},
-            keep_nogene_rxn => 0,
+            keep_nogene_rxn => 1,
             #media_id =>
             #media_workspace =>
             minimum_target_flux => 0.1,
@@ -1119,6 +1119,7 @@ foreach my $k (keys $templateId){
 
         });
     }
+
     # removing z compartment reactions from individual model propagations - need to change the input model name
     if ($params->{template_model} ne 'default_temp'){
         my $edited_model = $fbaO->edit_metabolic_model({
