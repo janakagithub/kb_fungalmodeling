@@ -564,8 +564,8 @@ sub build_fungal_model
       iNL895 =>  ['iNL895_KBase2', 'Yarrowia_lipolytica_CLIB122','GCF_000002525.2'],
       iWV1213 => ['iWV1213_KBase2', 'Mucor_circinelloides_CBS277','Mucor_circinelloides_CBS277.49_v2.0'],
       iWV1314 => ['iWV1314_KBase3', 'Aspergillus_oryzae_RIB40','GCF_000184455.2'],
-      #iMM904 => ['iMM904_KBase3_ExtendedBiomassV1','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
-      iMM904 => ['iMM904_KBase3_Version1.5','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
+      iMM904 => ['iMM904_KBase3_ExtendedBiomassV1','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
+      #iMM904 => ['iMM904_KBase3_Version1.5','Saccharomyces_cerevisiae_5288c','GCF_000146045.2'],
 
     };
 #######
